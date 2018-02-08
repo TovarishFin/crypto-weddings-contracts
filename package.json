@@ -1,0 +1,41 @@
+{
+  "name": "block-chapel",
+  "version": "0.0.1",
+  "description": "Wedding DApp with smart contracts",
+  "scripts": {
+    "lint:js": "eslint ./",
+    "lint:contracts": "solium -d ./contracts/",
+    "start": "yarn ganache-cli -b 15 -d -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'",
+    "migrate:dev": "yarn truffle migrate --network dev --reset",
+    "test": "truffle test",
+    "clean:contracts": "rimraf build/contracts",
+    "clean:install": "rimraf node_modules && yarn install",
+    "build": "truffle compile"
+  },
+  "author": "Cody Lamson",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": ">= 8",
+    "bignumber.js": "^5.0.0",
+    "eslint": "^4.9.0",
+    "eslint-config-prettier": ">= 2.7.0",
+    "eslint-plugin-compat": ">= 2.1.0",
+    "eslint-plugin-import": ">= 2.8.0",
+    "eslint-plugin-prettier": ">= 2.3.1",
+    "eslint-plugin-promise": ">= 3.6.0",
+    "eslint-plugin-security": ">= 1.4.0",
+    "ethereumjs-abi": "^0.6.5",
+    "ganache-cli": "^6.0.3",
+    "prettier": "^1.8.2",
+    "rimraf": "^2.6.2",
+    "solium": "^1.1.2",
+    "truffle": "^4.0.5",
+    "truffle-contract": "^3.0.2",
+    "web3": "^0.20.4",
+    "zeppelin-solidity": "^1.5.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-babel": "^4.1.2",
+    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
+}
