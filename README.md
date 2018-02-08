@@ -293,27 +293,27 @@ Wedding contracts do the following:
 
 ## developer todo list:
 
-- [ x ] setup watchers for `weddingStarted` and `weddingRemoved` events from `weddingManager`. set watchers to start from currentBlock
+- [x] setup watchers for `weddingStarted` and `weddingRemoved` events from `weddingManager`. set watchers to start from currentBlock
 
-- [ x ] add/remove weddings based on events `weddingManager` events
+- [x] add/remove weddings based on events `weddingManager` events
 
-- [ x ] setup watchers for `wedding` events when going to `/wedding/:weddingAddress` or `/edit-wedding/:weddingAddress`
+- [x] setup watchers for `wedding` events when going to `/wedding/:weddingAddress` or `/edit-wedding/:weddingAddress`
 
-- [ x ] update contract state for each `wedding` when event comes in
+- [x] update contract state for each `wedding` when event comes in
 
 - [ ] setup fallback for events where `txid` is queried in case of missed event.
 
-- [ x ] use notification system to give feedback regarding errors/etc with transactions and events
+- [x] use notification system to give feedback regarding errors/etc with transactions and events
 
-- [ x ] check `weddingOf` when account is present. create link in menu to go there.
+- [x] check `weddingOf` when account is present. create link in menu to go there.
 
 - [ ] implement wedding search list?
 
 - [ ] implement filtering based on `verifiedWedding`
 
-- [ x ] implement fallback web3 using infura (wait for better bundler)
+- [x] implement fallback web3 using infura (wait for better bundler)
 
-- [ x ] implement feedback when no accounts present (use notifier)
+- [x] implement feedback when no accounts present (use notifier)
 
 - [ ] implement form validation
 
