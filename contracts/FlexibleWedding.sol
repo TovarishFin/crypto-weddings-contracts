@@ -191,8 +191,8 @@ contract FlexibleWedding {
     atPending
     returns (bool)
   {
-    weddingManager.removeWedding(partner1, partner2);
     weddingManager.triggerWeddingCancelled();
+    weddingManager.removeWedding(partner1, partner2);
     msg.sender == partner1
       ? selfdestruct(partner2)
       : selfdestruct(partner1);

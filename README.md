@@ -1,8 +1,8 @@
-# block-chapel
+# crypto-weddings
 
-## What is block-chapel?
+## What is crypto-weddings?
 
-block-chapel is a DApp which allows anyone to display their marriage for the world to see forever on the ethereum blockchain. block-chapel has no opinions on who can marry.
+crypto-weddings is a DApp which allows anyone to display their marriage for the world to see forever on the ethereum blockchain. crypto-weddings has no opinions on who can marry.
 
 ## Who might be interested?
 
@@ -38,18 +38,22 @@ This means that non traditional couples in more conservative societies are able 
 * ether
   * the monetary unit of the ethereum network
 
-## What Can block-chapel do?
+## What Can crypto-weddings do?
 
 * blockchain marriage
   * a smart contract is deployed for every couple wishing to marry
   * the wedding is set to pending until both persons agree to marry
   * either person can reject the marriage and destroy the contract
   * once both agree, the marriage is confirmed and stays on the blockchain
+* wedding gifts
+  * anyone can send ether to the wedding contract
+    * can be claimed in full by either fiance/partner
 * blockchain divorce
   * need both persons to agree to divorce
   * divorce fee needs to be paid to contract
     * fee can be paid by anyone, the only thing that matters is that the fee is paid.
     * fee is paid by sending ether to the contract address
+    * if wedding gift money is still in wedding contract, gift money is forfeit and goes towards divorce
   * once when above conditions are met, the contract self destructs
     * fee is sent to wedding manager
 * manual wedding contract verification
@@ -81,6 +85,7 @@ This means that non traditional couples in more conservative societies are able 
       * this only acts as a mechanism to decide whether or not to display the wedding on the DApp
   * cannot change fees for single cases
   * cannot refund money
+  * cannot claim wedding gifts from wedding contracts (unless balance remains at time of divorce)
 
 ### What Can the Fiances do?
   * create a custom wedding smart contract for a fee
@@ -94,6 +99,7 @@ This means that non traditional couples in more conservative societies are able 
   * change fees
   * destroy wedding alone after marriage finalized
   * verify their own wedding
+  * claim wedding money (while divorce process is NOT pending)
 
 ### What Can the Fiances do Through Mutual Consent?
   * marry
@@ -101,9 +107,9 @@ This means that non traditional couples in more conservative societies are able 
     * destroys the contract
 ## Fees
 
-* marriage fee: .25 ether (~$250)
-* divorce fee: 2.5 ether (~$2500)
-* manual etherscan contract verification: .1 ether (~$100)
+* marriage fee: .25 ether (~$125)
+* divorce fee: 2.5 ether (~$1250)
+* manual etherscan contract verification: .1 ether (~$50)
 * any transactions: regular gas costs (ether paid to do anything on the network)
 
 ## Process
@@ -127,17 +133,17 @@ In order to explain the process, example names and fees are given below:
 #### Main Example
 
 1. Bob and Ella are in love and want to do something special.
-1. Bob goes to the block-chapel DApp and likes what he sees.
+1. Bob goes to the crypto-weddings DApp and likes what he sees.
 1. Bob shows Ella and she really likes the idea.
 1. Both follow the directions to get a metamask account (if they don't already have one).
 1. Both get some ether and puts it in their metamask accounts.
 1. Bob or Ella fill out the form, pay the fee of .25 ether plus gas costs to create a wedding, and fill in the following information:
-  * Bride's name
-  * Bride's vows
-  * Bride's ethereum address (the address ella has in her metamask account)
-  * Groom's name
-  * Groom's vows
-  * Groom's ethereum address (the address Bobb has in his metamask account)
+  * Partner1's name
+  * Partner1's vows
+  * Partner1's ethereum address (the address ella has in her metamask account)
+  * Partner2's name
+  * Partner2's vows
+  * Partner2's ethereum address (the address Bobb has in his metamask account)
   * They choose a traditional wedding (they are a man and a woman, though gay and lesbian weddings are also available).
 1. The wedding personalized wedding smart contract has been created and is automatically found in the DApp when they are logged in with metamask and are using the same account address as in the wedding contract.
 1. Bob selects "I do" in the DApp
@@ -146,6 +152,8 @@ In order to explain the process, example names and fees are given below:
   * gas fees need to be paid here
 1. The wedding contract status changes to married. Hooray!
 1. Bob or Ella select a picture and upload it to the wedding contract.
+1. Friends and family can send money to the wedding contract as a gift in ether
+1. Either Ella or Bob can claim the entire wedding gift balance of the contract (marriage is about trust)
 
 #### Two Years Later...
 1. Bob and Ella hate each other now :(
@@ -163,17 +171,17 @@ In order to explain the process, example names and fees are given below:
 #### In an Alternate Reality...
 
 1. Bob loves Ella and wants to do something special.
-1. Bob goes to the block-chapel DApp and likes what he sees.
+1. Bob goes to the crypto-weddings DApp and likes what he sees.
 1. Bob shows Ella and she says ok...
 1. Both follow the directions to get a metamask account (if they don't already have one).
 1. Both get some ether and puts it in their metamask accounts.
 1. Bob fills out the form, pays the fee of .25 ether plus gas costs to create a wedding, and fills in the following information:
-  * Bride's name
-  * Bride's vows
-  * Bride's ethereum address (the address ella has in her metamask account)
-  * Groom's name
-  * Groom's vows
-  * Groom's ethereum address (the address Bobb has in his metamask account)
+  * Partner1's name
+  * Partner1's vows
+  * Partner1's ethereum address (the address ella has in her metamask account)
+  * Partner2's name
+  * Partner2's vows
+  * Partner2's ethereum address (the address Bobb has in his metamask account)
   * They choose a traditional wedding (they are a man and a woman, though gay and lesbian weddings are also available).
 1. The wedding personalized wedding smart contract has been created and is automatically found in the DApp when they are logged in with metamask and are using the same account address as in the wedding contract.
 1. Bob selects "I do" in the DApp
@@ -185,12 +193,10 @@ In order to explain the process, example names and fees are given below:
 
 ### Technical
 
-There are four smart contracts which perform all needed functions:
+There are two smart contracts which perform all needed functions:
 
 1. `WeddingManager.sol`
-1. `TraditionalWedding.sol`
-1. `GayWedding.sol`
-1. `LesbianWedding.sol`
+1. `FlexibleWedding.sol`
 
 #### WeddingManager
 
@@ -217,42 +223,42 @@ The owner is set when first deployed. A placeholder wedding is pushed to wedding
 * collects fees
   * fees come from:
     * marriage fee on `WeddingManager` contract
-    * divorce fee on `TraditionalWedding` contract
+    * divorce fee on `FlexibleWedding` contract
   * onlyOwner
 * creates new wedding contracts
-  * anyone can create a new `TraditionalWedding` from `WeddingManager`
+  * anyone can create a new `FlexibleWedding` from `WeddingManager`
     * fee must be paid
 * keeps a list of `weddings` that have been created
   * modified when a new wedding is created
 * verifies weddings
   * used as a way of filtering unverified weddings from the DApp
 
-#### TraditionalWedding, GayWedding, LesbianWedding
+#### FlexibleWedding
 
-All wedding contracts are essentially the same. The only difference is the use of naming for fiances (bride and groom, groom and groom2, bride and bride2). From here on out, for the sake of brevity, TraditionalWedding will be referred to, though others will be either identical or very similar.
+All wedding contracts are essentially the same. The FlexibleWedding contract is essentially a contract between the two fiances.
 
-`TraditionalWedding.sol` takes the following constructor arguments:
+`FlexibleWedding.sol` takes the following constructor arguments:
 
 ```
 // constructor function
-function TraditionalWedding
+function FlexibleWedding
 (
-  address _brideAddress,
-  string _brideName,
-  string _brideVows,
-  address _groomAddress,
-  string _groomName,
-  string _groomVows
+  address _partner1Address,
+  string _partner1Name,
+  string _partner1Vows,
+  address _partner2Address,
+  string _partner2Name,
+  string _partner2Vows
 )
   public
 {
   require(isContract(msg.sender));
-  bride = _brideAddress;
-  brideName = _brideName;
-  brideVows = _brideVows;
-  groom = _groomAddress;
-  groomName = _groomName;
-  groomVows = _groomVows;
+  partner1 = _partner1Address;
+  partner1Name = _partner1Name;
+  partner1Vows = _partner1Vows;
+  partner2 = _partner2Address;
+  partner2Name = _partner2Name;
+  partner2Vows = _partner2Vows;
   weddingManager = msg.sender;
   weddingManagerContract = WeddingManager(weddingManager);
 }
@@ -271,50 +277,26 @@ Wedding contracts do the following:
 * disagree to marriage
   * either can disagree through `rejectProposal` function
   * must be in `Pending` status
-  * `TraditionalWedding` contract instance destroyed
-  * any funds in contract sent to `WeddingManager`upon destruction
+  * `FlexibleWedding` contract instance destroyed
+  * any funds in contract sent to `WeddingManager` upon destruction
 * divorce
   * a fee must be paid in order to divorce
   * anyone can pay (fallback function intentionally left alone)
   * divorce can also be paid for through the divorce function itself
   * divorce successfully occurs when:
     * contract balance is at or above divorce fee
-    * both `bride` and `groom` have run the divorce function
+    * both `partner1` and `partner2` have run the divorce function
   * when divorce conditions are met
     * `Divorce` event emitted
-    * `TraditionalWedding` sends funds to `WeddingManager`
-    * `TraditionalWedding` `selfdestruct`s
+    * `FlexibleWedding` sends funds to `WeddingManager`
+    * `FlexibleWedding` `selfdestruct`s
 * change wedding photo
-  * either `bride` or `groom` can change the `weddingPhoto`
+  * either `partner1` or `partner2` can change the `weddingPhoto`
   * shows in the DApp
   * can be IPFS hash or url to image
     * IPFS maintained through amazon s3 server which pins images sent from client
     * DApp retrieves IPFS through client node
-
-## developer todo list:
-
-- [x] setup watchers for `weddingStarted` and `weddingRemoved` events from `weddingManager`. set watchers to start from currentBlock
-
-- [x] add/remove weddings based on events `weddingManager` events
-
-- [x] setup watchers for `wedding` events when going to `/wedding/:weddingAddress` or `/edit-wedding/:weddingAddress`
-
-- [x] update contract state for each `wedding` when event comes in
-
-- [ ] setup fallback for events where `txid` is queried in case of missed event.
-
-- [x] use notification system to give feedback regarding errors/etc with transactions and events
-
-- [x] check `weddingOf` when account is present. create link in menu to go there.
-
-- [ ] implement wedding search list?
-
-- [ ] implement filtering based on `verifiedWedding`
-
-- [x] implement fallback web3 using infura (wait for better bundler)
-
-- [x] implement feedback when no accounts present (use notifier)
-
-- [ ] implement form validation
-
-- [ ] manually estimate gas price
+* send wedding gifts
+  * anyone can send ether to this contract
+  * these wedding gifts can be claimed in full by either fiance
+  * if a divorce is in progress, these funds are no longer claimable and go towards the divorce fee

@@ -2,6 +2,7 @@ const assert = require('assert')
 const BigNumber = require('bignumber.js')
 
 const {
+  testContractDestroyed,
   sendTransaction,
   getEtherBalance,
   getTxInfo,
@@ -90,9 +91,7 @@ const testRejectPropsoal = async (
   const postPartner1Balance = await getEtherBalance(partner1)
   const postPartner2Balance = await getEtherBalance(partner2)
   const postContractBalance = await getEtherBalance(tdw.address)
-  const postPartner1Address = await tdw.partner1()
-  const postPartner2Address = await tdw.partner2()
-  const postMarried = await tdw.married()
+  await testContractDestroyed(tdw.married, [])
 
   if (rejector === partner1) {
     assert.equal(
@@ -123,12 +122,6 @@ const testRejectPropsoal = async (
     partner2,
     'the partner2 address should still be what was originally in the constructor'
   )
-  assert(
-    postPartner1Address === '0x' || '0x',
-    'the postPartner1Address should be zeroed out'
-  )
-  assert(postPartner2Address === '0x' || '0x', 'the partner2 should be zeroed out')
-  assert.equal(false, postMarried, 'married should be zeroed out')
 }
 
 const testAcceptProposal = async (tdw, partner1, partner2, acceptor) => {
@@ -142,8 +135,14 @@ const testAcceptProposal = async (tdw, partner1, partner2, acceptor) => {
   const postPartner1SaysYes = await tdw.partner1SaysYes()
   const postMarried = await tdw.married()
 
-  assert(!prePartner1SaysYes, 'partner1SaysYes should be false before this test')
-  assert(!prePartner2SaysYes, 'partner2SaysYes should be false before this test')
+  assert(
+    !prePartner1SaysYes,
+    'partner1SaysYes should be false before this test'
+  )
+  assert(
+    !prePartner2SaysYes,
+    'partner2SaysYes should be false before this test'
+  )
   assert(!preMarried, 'the test should start with married === false')
   assert(
     !postMarried,
@@ -151,9 +150,15 @@ const testAcceptProposal = async (tdw, partner1, partner2, acceptor) => {
   )
 
   if (acceptor === partner1) {
-    assert(postPartner1SaysYes, 'partner1SaysYes should be true after acceptProposal')
+    assert(
+      postPartner1SaysYes,
+      'partner1SaysYes should be true after acceptProposal'
+    )
   } else {
-    assert(postPartner2SaysYes, 'partner2SaysYes should be true after acceptProposal')
+    assert(
+      postPartner2SaysYes,
+      'partner2SaysYes should be true after acceptProposal'
+    )
   }
 }
 
@@ -221,7 +226,13 @@ const testChangeWeddingPhoto = async (tdw, changer) => {
   )
 }
 
-const testPetitionForDivorce = async (twd, partner1, partner2, feeAmount, petitioner) => {
+const testPetitionForDivorce = async (
+  twd,
+  partner1,
+  partner2,
+  feeAmount,
+  petitioner
+) => {
   const value = new BigNumber(feeAmount)
   const prePartner1SaysYes = await twd.partner1SaysYes()
   const prePartner2SaysYes = await twd.partner2SaysYes()
@@ -275,7 +286,13 @@ const testPetitionForDivorce = async (twd, partner1, partner2, feeAmount, petiti
   }
 }
 
-const testAgreeDivorce = async (twd, partner1, partner2, feeAmount, petitioner) => {
+const testAgreeDivorce = async (
+  twd,
+  partner1,
+  partner2,
+  feeAmount,
+  petitioner
+) => {
   const value = new BigNumber(feeAmount)
   const prePartner1SaysYes = await twd.partner1SaysYes()
   const prePartner2SaysYes = await twd.partner2SaysYes()

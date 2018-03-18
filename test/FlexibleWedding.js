@@ -8,6 +8,7 @@ const FlexibleWedding = artifacts.require('FlexibleWedding')
 
 const {
   testWillThrow,
+  testContractDestroyed,
   getEtherBalance,
   getTxInfo,
   gasPrice
@@ -353,7 +354,7 @@ describe('when unhappily married', async () => {
       })
 
       const postPartner1TxInfo = await getTxInfo(postPartner1Tx)
-      const postPartner1Married = await tdw.married()
+      await testContractDestroyed(tdw.married, [])
       const postPartner1Balance = await getEtherBalance(partner1)
       // cannot get balance of postPartner1ContractBalance because contract selfdestructs here
       const postWeddingManagerContractBalance = await getEtherBalance(
@@ -378,10 +379,6 @@ describe('when unhappily married', async () => {
       assert(
         postPartner2Married,
         'married should still be true until other party divorces'
-      )
-      assert(
-        !postPartner1Married,
-        'married should be false after both have divorced'
       )
       assert.equal(
         postPartner1Balance.toString(),
@@ -431,7 +428,7 @@ describe('when unhappily married', async () => {
         gasPrice
       })
 
-      const postPartner2Married = await tdw.married()
+      await testContractDestroyed(tdw.married, [])
 
       const finalWeddingContractBalance = await getEtherBalance(tdw.address)
       const postWeddingManagerContractBalance = await getEtherBalance(
@@ -449,10 +446,6 @@ describe('when unhappily married', async () => {
         postWeddingContractBalance.minus(preWeddingContractBalance).toString(),
         defaultDivorceFee.toString(),
         'the wedding contract should be decremented by the defaultDivorceFee'
-      )
-      assert(
-        !postPartner2Married,
-        'married should now be false and the contract should be selfdestructed'
       )
       assert.equal(
         finalWeddingContractBalance.toString(),
@@ -496,7 +489,7 @@ describe('when unhappily married', async () => {
         .minus(defaultDivorceFee)
         .minus(gasPrice.mul(postPartner2TxInfo.gasUsed))
 
-      const postPartner2Married = await tdw.married()
+      await testContractDestroyed(tdw.married, [])
 
       const finalWeddingContractBalance = await getEtherBalance(tdw.address)
       const postWeddingManagerContractBalance = await getEtherBalance(
@@ -514,10 +507,6 @@ describe('when unhappily married', async () => {
         postPartner2Balance.toString(),
         expectedPostPartner2Balance.toString(),
         'the balance should match expectedPostPartner2Balance'
-      )
-      assert(
-        !postPartner2Married,
-        'married should now be false and the contract should be selfdestructed'
       )
       assert.equal(
         finalWeddingContractBalance.toString(),
@@ -578,7 +567,7 @@ describe('when unhappily married', async () => {
         gasPrice
       })
 
-      const postPartner2PayMarried = await tdw.married()
+      await testContractDestroyed(tdw.married, [])
       const postPartner2TxInfo = await getTxInfo(postPartner2Tx)
       const postPartner2Balance = await getEtherBalance(partner2)
       const expectedPostPartner2Balance = prePartner2Balance
@@ -594,7 +583,6 @@ describe('when unhappily married', async () => {
       assert(postPartner1Married, 'should still be married')
       assert(postPartner2Married, 'should still be married')
       assert(postPartner1PayMarried, 'should still be married')
-      assert(!postPartner2PayMarried, 'should be divorced')
       assert(
         preWeddingContractBalance.toString(),
         '0',

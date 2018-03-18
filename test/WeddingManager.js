@@ -483,8 +483,7 @@ describe('when removing weddings', () => {
       const preWeddingVerified = await wdm.verifiedWedding(tdm.address)
       const preWeddingIndex = await wdm.weddingIndex(tdm.address)
       const preWeddingListing = await wdm.weddings(preWeddingIndex)
-
-      await tdm.rejectProposal.sendTransaction({
+      await tdm.rejectProposal({
         from: partner1Address
       })
 

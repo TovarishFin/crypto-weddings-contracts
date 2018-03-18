@@ -257,7 +257,7 @@ contract WeddingManager is Ownable {
     weddingOf[_participant1] = address(0);
     weddingOf[_participant2] = address(0);
     weddings[weddingIndex[msg.sender]] = address(0);
-    weddingIndex[msg.sender] = 0;
+    weddingIndex[msg.sender] = uint256(0);
     verifiedWedding[msg.sender] = false;
     return true;
   }
