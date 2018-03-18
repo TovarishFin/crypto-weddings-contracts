@@ -3,7 +3,7 @@ const assert = require('assert')
 const BigNumber = require('bignumber.js')
 // smart contracts
 const WeddingManager = artifacts.require('WeddingManager')
-const TraditionalWedding = artifacts.require('TraditionalWedding')
+const FlexibleWedding = artifacts.require('FlexibleWedding')
 // test utils
 
 const {
@@ -17,11 +17,18 @@ const {
 const defaultMarriageFee = new BigNumber(25e16)
 const defaultDivorceFee = new BigNumber(25e17)
 const gasPrice = new BigNumber(30e9)
+const weddingType = 1
+const partner1Name = 'Ella'
+const partner2Name = 'Bob'
+const partner1Vows =
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quam nunc, rutrum hendrerit odio eu, fermentum ultrices elit. Cras et dolor fringilla, blandit arcu id, fringilla mauris. Quisque imperdiet felis arcu, vel dapibus ipsum vulputate eget. Integer suscipit feugiat velit nec vulputate. Nam euismod enim nec orci facilisis faucibus. Morbi et leo a nibh suscipit cursus. Fusce quis tempus lacus, et consectetur turpis. Vivamus eu neque rhoncus, suscipit diam nec, pellentesque urna. Nullam aliquet, ipsum porta tincidunt facilisis, ipsum quam aliquet lectus, non egestas lacus sapien vitae nibh. Mauris consequat eget quam non ornare.'
+const partner2Vows =
+  'Proin ut ultrices lectus. Duis sed commodo ligula. Sed fringilla metus et condimentum malesuada. Proin consectetur eros diam, ac sagittis ligula efficitur at. In nulla turpis, iaculis nec cursus posuere, luctus accumsan lacus. Ut in neque convallis, aliquam tellus sit amet, porttitor elit. Etiam efficitur ante quis lacus elementum, nec semper quam ultrices. Nunc congue lobortis libero non porta. Etiam ante leo, gravida non sem at, porta scelerisque libero. Nam consequat, nunc eget euismod dapibus, nibh ex maximus quam, a interdum diam augue sed ante. Praesent finibus tincidunt augue, vitae auctor dolor viverra ac. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur tincidunt rutrum risus, nec dignissim urna gravida at. Nunc pulvinar felis aliquet, accumsan dolor vitae, tristique odio.'
 
 describe('when deploying WeddingManager', () => {
   contract('WeddingManager', accounts => {
     const owner = accounts[0]
-    const brideAddress = accounts[1]
+    const partner1Address = accounts[1]
     let wdm
     before('deploy contract', async () => {
       wdm = await WeddingManager.new()
@@ -58,7 +65,7 @@ describe('when deploying WeddingManager', () => {
       await testWillThrow(wdm.changeMarriageFee, [
         new BigNumber(25e12),
         {
-          from: brideAddress
+          from: partner1Address
         }
       ])
     })
@@ -80,7 +87,7 @@ describe('when deploying WeddingManager', () => {
       await testWillThrow(wdm.changeDivorceFee, [
         new BigNumber(25e13),
         {
-          from: brideAddress
+          from: partner1Address
         }
       ])
     })
@@ -102,32 +109,25 @@ describe('when deploying WeddingManager', () => {
 
 describe('when handling weddings in WeddingManager', () => {
   contract('WeddingMangager', accounts => {
-    /* eslint-disable max-len */
     const owner = accounts[0]
     // traditional wedding
-    const brideAddress = accounts[1]
-    const groomAddress = accounts[2]
-    const brideName = 'Ella'
-    const groomName = 'Bob'
-    const brideVows =
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quam nunc, rutrum hendrerit odio eu, fermentum ultrices elit. Cras et dolor fringilla, blandit arcu id, fringilla mauris. Quisque imperdiet felis arcu, vel dapibus ipsum vulputate eget. Integer suscipit feugiat velit nec vulputate. Nam euismod enim nec orci facilisis faucibus. Morbi et leo a nibh suscipit cursus. Fusce quis tempus lacus, et consectetur turpis. Vivamus eu neque rhoncus, suscipit diam nec, pellentesque urna. Nullam aliquet, ipsum porta tincidunt facilisis, ipsum quam aliquet lectus, non egestas lacus sapien vitae nibh. Mauris consequat eget quam non ornare.'
-    const groomVows =
-      'Proin ut ultrices lectus. Duis sed commodo ligula. Sed fringilla metus et condimentum malesuada. Proin consectetur eros diam, ac sagittis ligula efficitur at. In nulla turpis, iaculis nec cursus posuere, luctus accumsan lacus. Ut in neque convallis, aliquam tellus sit amet, porttitor elit. Etiam efficitur ante quis lacus elementum, nec semper quam ultrices. Nunc congue lobortis libero non porta. Etiam ante leo, gravida non sem at, porta scelerisque libero. Nam consequat, nunc eget euismod dapibus, nibh ex maximus quam, a interdum diam augue sed ante. Praesent finibus tincidunt augue, vitae auctor dolor viverra ac. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur tincidunt rutrum risus, nec dignissim urna gravida at. Nunc pulvinar felis aliquet, accumsan dolor vitae, tristique odio.'
+    const partner1Address = accounts[1]
+    const partner2Address = accounts[2]
 
     let wdm
-    /* eslint-enable max-len */
     before('setup contract/state', async () => {
       wdm = await WeddingManager.new()
     })
 
     it('should NOT create a new wedding if the creator is NOT one of the fiances', async () => {
       await testWillThrow(wdm.startWedding, [
-        brideAddress,
-        brideName,
-        brideVows,
-        groomAddress,
-        groomName,
-        groomVows,
+        partner1Address,
+        partner1Name,
+        partner1Vows,
+        partner2Address,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
           from: accounts[9],
           value: defaultMarriageFee
@@ -135,117 +135,140 @@ describe('when handling weddings in WeddingManager', () => {
       ])
     })
 
-    it('should NOT create a new wedding if bride address is missing', async () => {
+    it('should NOT create a new wedding if partner1 address is missing', async () => {
       await testWillThrow(wdm.startWedding, [
         addressZero,
-        brideName,
-        brideVows,
-        groomAddress,
-        groomName,
-        groomVows,
+        partner1Name,
+        partner1Vows,
+        partner2Address,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
-          from: groomAddress,
+          from: partner2Address,
           value: defaultMarriageFee
         }
       ])
     })
 
-    it('should NOT create a new wedding if bride name is missing', async () => {
+    it('should NOT create a new wedding if partner1 name is missing', async () => {
       await testWillThrow(wdm.startWedding, [
-        brideAddress,
+        partner1Address,
         '',
-        brideVows,
-        groomAddress,
-        groomName,
-        groomVows,
+        partner1Vows,
+        partner2Address,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
-          from: groomAddress,
+          from: partner2Address,
           value: defaultMarriageFee
         }
       ])
     })
 
-    it('should NOT create a new wedding if bride vows are missing', async () => {
+    it('should NOT create a new wedding if partner1 vows are missing', async () => {
       await testWillThrow(wdm.startWedding, [
-        brideAddress,
-        brideName,
+        partner1Address,
+        partner1Name,
         '',
-        groomAddress,
-        groomName,
-        groomVows,
+        partner2Address,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
-          from: groomAddress,
+          from: partner2Address,
           value: defaultMarriageFee
         }
       ])
     })
 
-    it('should NOT create a new wedding if groom address is missing', async () => {
+    it('should NOT create a new wedding if partner2 address is missing', async () => {
       await testWillThrow(wdm.startWedding, [
-        brideAddress,
-        brideName,
-        brideVows,
+        partner1Address,
+        partner1Name,
+        partner1Vows,
         addressZero,
-        groomName,
-        groomVows,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
-          from: groomAddress,
+          from: partner2Address,
           value: defaultMarriageFee
         }
       ])
     })
 
-    it('should NOT create a new wedding if groom name is missing', async () => {
+    it('should NOT create a new wedding if partner2 name is missing', async () => {
       await testWillThrow(wdm.startWedding, [
-        brideAddress,
-        brideName,
-        brideVows,
-        groomAddress,
+        partner1Address,
+        partner1Name,
+        partner1Vows,
+        partner2Address,
         '',
-        groomVows,
+        partner2Vows,
+        weddingType,
         {
-          from: groomAddress,
+          from: partner2Address,
           value: defaultMarriageFee
         }
       ])
     })
 
-    it('should NOT create a new wedding if groom vows are missing', async () => {
+    it('should NOT create a new wedding if partner2 vows are missing', async () => {
       await testWillThrow(wdm.startWedding, [
-        brideAddress,
-        brideName,
-        brideVows,
+        partner1Address,
+        partner1Name,
+        partner1Vows,
         addressZero,
-        groomName,
+        partner2Name,
         '',
+        weddingType,
         {
-          from: groomAddress,
+          from: partner2Address,
           value: defaultMarriageFee
         }
       ])
     })
 
-    it('should create a new traditional wedding as groom', async () => {
+    it('should NOT create a new wedding if NO weddingType', async () => {
+      await testWillThrow(wdm.startWedding, [
+        partner1Address,
+        partner1Name,
+        partner1Vows,
+        addressZero,
+        partner2Name,
+        partner2Vows,
+        null,
+        {
+          from: partner2Address,
+          value: defaultMarriageFee
+        }
+      ])
+    })
+
+    it('should create a new traditional wedding as partner2', async () => {
       const preWeddings = await wdm.listWeddings()
-      const preGroomWeddingOf = await wdm.weddingOf(groomAddress)
-      const preBrideWeddingOf = await wdm.weddingOf(brideAddress)
+      const prePartner2WeddingOf = await wdm.weddingOf(partner2Address)
+      const prePartner1WeddingOf = await wdm.weddingOf(partner1Address)
 
       await wdm.startWedding.sendTransaction(
-        brideAddress,
-        brideName,
-        brideVows,
-        groomAddress,
-        groomName,
-        groomVows,
+        partner1Address,
+        partner1Name,
+        partner1Vows,
+        partner2Address,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
-          from: groomAddress,
+          from: partner2Address,
           value: defaultMarriageFee
         }
       )
 
       const postWeddings = await wdm.listWeddings()
-      const postGroomWeddingOf = await wdm.weddingOf(groomAddress)
-      const postBrideWeddingOf = await wdm.weddingOf(brideAddress)
+      const postPartner2WeddingOf = await wdm.weddingOf(partner2Address)
+      const postPartner1WeddingOf = await wdm.weddingOf(partner1Address)
 
       assert.equal(
         postWeddings.length - preWeddings.length,
@@ -257,70 +280,72 @@ describe('when handling weddings in WeddingManager', () => {
         'the added wedding should NOT be address 0'
       )
       assert.equal(
-        preGroomWeddingOf,
+        prePartner2WeddingOf,
         addressZero,
-        'the preGroomWeddingOf should be addressZero'
+        'the prePartner2WeddingOf should be addressZero'
       )
       assert.equal(
-        preBrideWeddingOf,
+        prePartner1WeddingOf,
         addressZero,
-        'the preBrideWeddingOf should be addressZero'
+        'the prePartner1WeddingOf should be addressZero'
       )
       assert(
-        postGroomWeddingOf !== addressZero,
-        'the postGroomWeddingOf should NOT be addressZero'
+        postPartner2WeddingOf !== addressZero,
+        'the postPartner2WeddingOf should NOT be addressZero'
       )
       assert(
-        postBrideWeddingOf !== addressZero,
-        'the postBrideWeddingOf should NOT be addressZero'
+        postPartner1WeddingOf !== addressZero,
+        'the postPartner1WeddingOf should NOT be addressZero'
       )
-      assert.equal(postBrideWeddingOf, postGroomWeddingOf)
+      assert.equal(postPartner1WeddingOf, postPartner2WeddingOf)
     })
 
-    it('should NOT create a new wedding if bride is already participating in a wedding', async () => {
-      const otherGroomAddress = accounts[7]
+    it('should NOT create a new wedding if partner1 is already participating in a wedding', async () => {
+      const otherPartner2Address = accounts[7]
       await testWillThrow(wdm.startWedding, [
-        brideAddress,
-        brideName,
-        brideVows,
-        otherGroomAddress,
-        groomName,
-        groomVows,
+        partner1Address,
+        partner1Name,
+        partner1Vows,
+        otherPartner2Address,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
-          from: brideAddress,
+          from: partner1Address,
           value: defaultMarriageFee
         }
       ])
     })
 
-    it('should NOT create a new wedding if groom is already participating in a wedding', async () => {
-      const otherBrideAddress = accounts[8]
+    it('should NOT create a new wedding if partner2 is already participating in a wedding', async () => {
+      const otherPartner1Address = accounts[8]
       await testWillThrow(wdm.startWedding, [
-        otherBrideAddress,
-        brideName,
-        brideVows,
-        groomAddress,
-        groomName,
-        groomVows,
+        otherPartner1Address,
+        partner1Name,
+        partner1Vows,
+        partner2Address,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
-          from: brideAddress,
+          from: partner1Address,
           value: defaultMarriageFee
         }
       ])
     })
 
     it('should NOT verify wedding if NOT owner', async () => {
-      const wedding = await wdm.weddingOf(brideAddress)
+      const wedding = await wdm.weddingOf(partner1Address)
       await testWillThrow(wdm.toggleWeddingVerification, [
         wedding,
         {
-          from: brideAddress
+          from: partner1Address
         }
       ])
     })
 
     it('should verify wedding NOT verify weddings if NOT owner', async () => {
-      const wedding = await wdm.weddingOf(brideAddress)
+      const wedding = await wdm.weddingOf(partner1Address)
       const preVerified = await wdm.verifiedWedding(wedding)
 
       await wdm.toggleWeddingVerification.sendTransaction(wedding, {
@@ -339,25 +364,25 @@ describe('when handling weddings in WeddingManager', () => {
     it('should NOT collect fees from contract if NOT owner', async () => {
       await testWillThrow(wdm.collectFees, [
         {
-          from: brideAddress
+          from: partner1Address
         }
       ])
     })
 
     it('should collect fees from contract if owner', async () => {
-      const preOwnerBalance = await getEtherBalance(web3, owner)
-      const preContractBalance = await getEtherBalance(web3, wdm.address)
+      const preOwnerBalance = await getEtherBalance(owner)
+      const preContractBalance = await getEtherBalance(wdm.address)
 
       const tx = await wdm.collectFees.sendTransaction({
         from: owner,
         gasPrice
       })
-      const meta = await getTxInfo(web3, tx)
+      const meta = await getTxInfo(tx)
       const expectedOwnerBalance = preOwnerBalance
         .add(preContractBalance)
         .minus(gasPrice.mul(meta.gasUsed))
-      const postOwnerBalance = await getEtherBalance(web3, owner)
-      const postContractBalance = await getEtherBalance(web3, wdm.address)
+      const postOwnerBalance = await getEtherBalance(owner)
+      const postContractBalance = await getEtherBalance(wdm.address)
       assert.equal(
         postOwnerBalance.toString(),
         expectedOwnerBalance.toString(),
@@ -374,7 +399,7 @@ describe('when handling weddings in WeddingManager', () => {
       web3.eth.sendTransaction(
         {
           to: wdm.address,
-          from: brideAddress,
+          from: partner1Address,
           value: 1e18
         },
         (err, res) => {
@@ -396,64 +421,57 @@ describe('when handling weddings in WeddingManager', () => {
 
 describe('when removing weddings', () => {
   contract('WeddingManager/WeddingContracts', accounts => {
-    /* eslint-disable max-len */
     const owner = accounts[0]
     // traditional wedding
-    const brideAddress = accounts[1]
-    const groomAddress = accounts[2]
-    const brideName = 'Ella'
-    const groomName = 'Bob'
-    const brideVows =
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quam nunc, rutrum hendrerit odio eu, fermentum ultrices elit. Cras et dolor fringilla, blandit arcu id, fringilla mauris. Quisque imperdiet felis arcu, vel dapibus ipsum vulputate eget. Integer suscipit feugiat velit nec vulputate. Nam euismod enim nec orci facilisis faucibus. Morbi et leo a nibh suscipit cursus. Fusce quis tempus lacus, et consectetur turpis. Vivamus eu neque rhoncus, suscipit diam nec, pellentesque urna. Nullam aliquet, ipsum porta tincidunt facilisis, ipsum quam aliquet lectus, non egestas lacus sapien vitae nibh. Mauris consequat eget quam non ornare.'
-    const groomVows =
-      'Proin ut ultrices lectus. Duis sed commodo ligula. Sed fringilla metus et condimentum malesuada. Proin consectetur eros diam, ac sagittis ligula efficitur at. In nulla turpis, iaculis nec cursus posuere, luctus accumsan lacus. Ut in neque convallis, aliquam tellus sit amet, porttitor elit. Etiam efficitur ante quis lacus elementum, nec semper quam ultrices. Nunc congue lobortis libero non porta. Etiam ante leo, gravida non sem at, porta scelerisque libero. Nam consequat, nunc eget euismod dapibus, nibh ex maximus quam, a interdum diam augue sed ante. Praesent finibus tincidunt augue, vitae auctor dolor viverra ac. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur tincidunt rutrum risus, nec dignissim urna gravida at. Nunc pulvinar felis aliquet, accumsan dolor vitae, tristique odio.'
+    const partner1Address = accounts[1]
+    const partner2Address = accounts[2]
 
     let wdm
     let tdm
-    /* eslint-enable max-len */
     before('setup contract/state', async () => {
       wdm = await WeddingManager.new()
       await wdm.startWedding(
-        brideAddress,
-        brideName,
-        brideVows,
-        groomAddress,
-        groomName,
-        groomVows,
+        partner1Address,
+        partner1Name,
+        partner1Vows,
+        partner2Address,
+        partner2Name,
+        partner2Vows,
+        weddingType,
         {
-          from: brideAddress,
+          from: partner1Address,
           value: defaultMarriageFee
         }
       )
-      const tdmAddress = await wdm.weddingOf(brideAddress)
-      tdm = await TraditionalWedding.at(tdmAddress)
+      const tdmAddress = await wdm.weddingOf(partner1Address)
+      tdm = await FlexibleWedding.at(tdmAddress)
       await wdm.toggleWeddingVerification.sendTransaction(tdmAddress, {
         from: owner
       })
     })
 
     it('traditional wedding should exist and start verified', async () => {
-      const actualBrideAddress = await tdm.bride()
-      const actualGroomAddress = await tdm.groom()
+      const actualPartner1Address = await tdm.partner1()
+      const actualPartner2Address = await tdm.partner2()
       const weddingVerified = wdm.verifiedWedding(tdm.address)
 
       assert(
-        actualBrideAddress !== addressZero,
-        'the actualBrideAddress should NOT be uninitialized'
+        actualPartner1Address !== addressZero,
+        'the actualPartner1Address should NOT be uninitialized'
       )
       assert.equal(
-        actualBrideAddress,
-        brideAddress,
-        'the actualBrideAddress should match that given to the constructor'
+        actualPartner1Address,
+        partner1Address,
+        'the actualPartner1Address should match that given to the constructor'
       )
       assert(
-        actualGroomAddress !== addressZero,
-        'the actualGroomAddress should nto be uninitialized'
+        actualPartner2Address !== addressZero,
+        'the actualPartner2Address should nto be uninitialized'
       )
       assert.equal(
-        actualGroomAddress,
-        groomAddress,
-        'the actualGroomAddress should match that given to the constructor'
+        actualPartner2Address,
+        partner2Address,
+        'the actualPartner2Address should match that given to the constructor'
       )
       assert(
         weddingVerified,
@@ -467,7 +485,7 @@ describe('when removing weddings', () => {
       const preWeddingListing = await wdm.weddings(preWeddingIndex)
 
       await tdm.rejectProposal.sendTransaction({
-        from: brideAddress
+        from: partner1Address
       })
 
       const postWeddingVerified = await wdm.verifiedWedding(tdm.address)

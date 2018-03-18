@@ -2,7 +2,6 @@
   "extends": "solium:all",
   "plugins": ["security"],
   "rules": {
-    "security/no-block-members": "off",
     "arg-overflow": "error",
     "array-declarations": "error",
     "blank-lines": "error",
