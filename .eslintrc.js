@@ -34,6 +34,7 @@ module.exports = {
     node: true,
   },
   globals: {
+    web3: true,
     __DEV__: true,
     __dirname: true,
     after: true,

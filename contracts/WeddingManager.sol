@@ -1,6 +1,6 @@
 pragma solidity 0.4.19;
 
-import "zeppelin-solidity/contracts/ownership/ownable.sol";
+import "openzeppelin-solidity/contracts/ownership/ownable.sol";
 import "./FlexibleWedding.sol";
 
 
