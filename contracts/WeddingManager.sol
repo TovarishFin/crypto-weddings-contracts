@@ -1,6 +1,6 @@
-pragma solidity 0.4.19;
+pragma solidity 0.5.7;
 
-import "openzeppelin-solidity/contracts/ownership/ownable.sol";
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./FlexibleWedding.sol";
 
 
@@ -90,11 +90,9 @@ contract WeddingManager is Ownable {
     uint256 indexed value
   );
 
-  // constructor
-  function WeddingManager()
+  constructor()
     public
   {
-    owner = msg.sender;
     // keep placeholder to ensure no other 0 indexed in mapping
     weddings.push(address(0));
   }
@@ -109,7 +107,7 @@ contract WeddingManager is Ownable {
     onlyWedding
     returns (bool)
   {
-    Divorce(msg.sender, _partner1, _partner2);
+    emit Divorce(msg.sender, _partner1, _partner2);
     return true;
   }
 
@@ -120,7 +118,7 @@ contract WeddingManager is Ownable {
     onlyWedding
     returns (bool)
   {
-    Partner1Accepts(msg.sender, _partner1);
+    emit Partner1Accepts(msg.sender, _partner1);
     return true;
   }
 
@@ -131,42 +129,40 @@ contract WeddingManager is Ownable {
     onlyWedding
     returns (bool)
   {
-    Partner2Accepts(msg.sender, _partner2);
+    emit Partner2Accepts(msg.sender, _partner2);
     return true;
   }
 
   function triggerPartner1Divorces(
-    address _partner1,
-    uint256 _value
+    address _partner1
   )
     public
     onlyWedding
     returns (bool)
   {
-    Partner1Divorces(msg.sender, _partner1);
+    emit Partner1Divorces(msg.sender, _partner1);
     return true;
   }
 
   function triggerPartner2Divorces(
-    address _partner2,
-    uint256 _value
+    address _partner2
   )
     public
     onlyWedding
     returns (bool)
   {
-    Partner2Divorces(msg.sender, _partner2);
+    emit Partner2Divorces(msg.sender, _partner2);
     return true;
   }
 
   function triggerOffChainDataChanged(
-    string _ipfsHash
+    string memory _ipfsHash
   )
     public
     onlyWedding
     returns (bool)
   {
-    OffChainDataChanged(msg.sender, _ipfsHash);
+    emit OffChainDataChanged(msg.sender, _ipfsHash);
     return true;
   }
 
@@ -175,7 +171,7 @@ contract WeddingManager is Ownable {
     onlyWedding
     returns (bool)
   {
-    WeddingCancelled(msg.sender);
+    emit WeddingCancelled(msg.sender);
     return true;
   }
 
@@ -187,7 +183,7 @@ contract WeddingManager is Ownable {
     onlyWedding
     returns (bool)
   {
-    Married(msg.sender, _partner1, _partner2);
+    emit Married(msg.sender, _partner1, _partner2);
     return true;
   }
 
@@ -198,7 +194,7 @@ contract WeddingManager is Ownable {
     public
     returns (bool)
   {
-    WeddingMoney(msg.sender, _gifter, _value);
+    emit WeddingMoney(msg.sender, _gifter, _value);
     return true;
   }
 
@@ -206,11 +202,11 @@ contract WeddingManager is Ownable {
 
   function validateWedding(
     address _fianceAddress,
-    string _fianceName,
-    string _fianceVows,
+    string memory _fianceName,
+    string memory _fianceVows,
     address _fiance2Address,
-    string _fiance2Name,
-    string _fiance2Vows
+    string memory _fiance2Name,
+    string memory _fiance2Vows
   )
     private
     view
@@ -221,8 +217,8 @@ contract WeddingManager is Ownable {
     bytes memory _fiance2VowsTest = bytes(_fiance2Vows);
 
     require(
-      msg.sender == _fianceAddress
-      || msg.sender == _fiance2Address
+      msg.sender == _fianceAddress ||
+      msg.sender == _fiance2Address
     );
     require(_fianceAddress != _fiance2Address);
     require(weddingOf[_fianceAddress] == address(0));
@@ -249,7 +245,10 @@ contract WeddingManager is Ownable {
   }
 
   // only to be called by wedding contracts when selfdestructing
-  function removeWedding(address _participant1, address _participant2)
+  function removeWedding(
+    address _participant1,
+    address _participant2
+  )
     external
     onlyWedding
     returns (bool)
@@ -265,7 +264,7 @@ contract WeddingManager is Ownable {
   function listWeddings()
     external
     view
-    returns (address[])
+    returns (address[] memory)
   {
     return weddings;
   }
@@ -281,7 +280,7 @@ contract WeddingManager is Ownable {
   function listVerifiedWeddings()
     external
     view
-    returns (address[])
+    returns (address[] memory)
   {
     return verifiedWeddings;
   }
@@ -335,20 +334,21 @@ contract WeddingManager is Ownable {
     external
     onlyOwner
   {
-    require(this.balance > 0);
-    owner.transfer(this.balance);
+    uint256 _bal = address(this).balance;
+    require(_bal > 0);
+    msg.sender.transfer(_bal);
   }
 
   // end owner functions
 
   // start wedding if fee is paid
   function startWedding(
-    address _partner1Address,
-    string _partner1Name,
-    string _partner1Vows,
-    address _partner2Address,
-    string _partner2Name,
-    string _partner2Vows,
+    address payable _partner1Address,
+    string calldata _partner1Name,
+    string calldata _partner1Vows,
+    address payable _partner2Address,
+    string calldata _partner2Name,
+    string calldata _partner2Vows,
     uint256 _weddingType
   )
     external
@@ -364,7 +364,8 @@ contract WeddingManager is Ownable {
       _partner2Name,
       _partner2Vows
     );
-    address _newMarriage = new FlexibleWedding(
+
+    FlexibleWedding _newMarriage = new FlexibleWedding(
       _partner1Address,
       _partner1Name,
       _partner1Vows,
@@ -373,20 +374,20 @@ contract WeddingManager is Ownable {
       _partner2Vows,
       _weddingType
     );
-    addWedding(_newMarriage, _partner1Address, _partner2Address);
-    WeddingStarted(
-      _newMarriage,
+    addWedding(address(_newMarriage), _partner1Address, _partner2Address);
+    emit WeddingStarted(
+      address(_newMarriage),
       _partner1Address,
       _partner1Name,
       _partner2Address,
       _partner2Name
     );
-    return _newMarriage;
+    return address(_newMarriage);
   }
 
   // do not allow random money to come into the contract
   function()
-    public
+    external
     payable
   {
     revert();

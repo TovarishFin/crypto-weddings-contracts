@@ -1,93 +1,15 @@
-pragma solidity 0.4.19;
+pragma solidity 0.5.7;
 
-
-contract WeddingManagerInterface {
-  // fee to be paid in order to divorce
-  uint256 public divorceFee;
-
-  function removeWedding(
-    address _participant1,
-    address _participant2
-  )
-    external
-    returns (bool)
-  {}
-
-  function triggerDivorce(
-    address _partner1,
-    address _partner2
-  )
-    public
-    returns (bool)
-  {}
-
-  function triggerPartner1Accepts(
-    address _partner1
-  )
-    public
-    returns (bool)
-  {}
-
-  function triggerPartner2Accepts(
-    address _partner2
-  )
-    public
-    returns (bool)
-  {}
-
-  function triggerPartner1Divorces(
-    address _partner1,
-    uint256 _value
-  )
-    public
-    returns (bool)
-  {}
-
-  function triggerPartner2Divorces(
-    address _partner2,
-    uint256 _value
-  )
-    public
-    returns (bool)
-  {}
-
-  function triggerOffChainDataChanged(
-    string _ipfsHash
-  )
-    public
-    returns (bool)
-  {}
-
-  function triggerWeddingCancelled()
-    public
-    returns (bool)
-  {}
-
-  function triggerMarried(
-    address _partner1,
-    address _partner2
-  )
-    public
-    returns (bool)
-  {}
-
-  function triggerWeddingMoney(
-    address _gifter,
-    uint256 _value
-  )
-    public
-    returns (bool)
-  {}
-}
+import "./interfaces/IWeddingManager.sol";
 
 
 contract FlexibleWedding {
   // master contract which created this contract
-  WeddingManagerInterface public weddingManager;
+  IWeddingManager public weddingManager;
   // public address of the partner1
-  address public partner1;
+  address payable public partner1;
   // public address of the partner2
-  address public partner2;
+  address payable public partner2;
   // name of the partner1
   string public partner1Name;
   // name of the partner2
@@ -126,15 +48,13 @@ contract FlexibleWedding {
     _;
   }
 
-  // constructor function
-  function FlexibleWedding
-  (
-    address _partner1Address,
-    string _partner1Name,
-    string _partner1Vows,
-    address _partner2Address,
-    string _partner2Name,
-    string _partner2Vows,
+  constructor(
+    address payable _partner1Address,
+    string memory _partner1Name,
+    string memory _partner1Vows,
+    address payable _partner2Address,
+    string memory _partner2Name,
+    string memory _partner2Vows,
     uint256 _weddingType
   )
     public
@@ -147,7 +67,7 @@ contract FlexibleWedding {
     partner2Name = _partner2Name;
     partner2Vows = _partner2Vows;
     weddingType = _weddingType;
-    weddingManager = WeddingManagerInterface(msg.sender);
+    weddingManager = IWeddingManager(msg.sender);
   }
 
   function isContract(address _address)
@@ -202,7 +122,7 @@ contract FlexibleWedding {
 
   // add or change a wedding photo
   function changeWeddingPhoto(
-    string _photo
+    string calldata _photo
   )
     external
     onlyFiances
@@ -233,10 +153,11 @@ contract FlexibleWedding {
 
     uint256 _divorceFee = weddingManager.divorceFee();
 
-    if (!partner1SaysYes && !partner2SaysYes && this.balance >= _divorceFee) {
+    if (!partner1SaysYes && !partner2SaysYes && address (this).balance >= _divorceFee) {
       require(weddingManager.triggerDivorce(partner1, partner2));
       require(weddingManager.removeWedding(partner1, partner2));
-      selfdestruct(weddingManager);
+      address payable payableWeddingManager = address(uint160(address(weddingManager)));
+      selfdestruct(payableWeddingManager);
     }
 
     return true;
@@ -249,16 +170,16 @@ contract FlexibleWedding {
   {
     // allow to claim wedding money at any point other than a during divorce process
     require(
-      (married == false)
-      || (partner1SaysYes && partner2SaysYes)
+      (married == false) ||
+      (partner1SaysYes && partner2SaysYes)
     );
-    msg.sender.transfer(this.balance);
+    msg.sender.transfer(address(this).balance);
   }
 
   // fallback function where divorces can be paid for by third parties
   // only if divorce has started
   function ()
-    public
+    external
     payable
   {
     weddingManager.triggerWeddingMoney(msg.sender, msg.value);

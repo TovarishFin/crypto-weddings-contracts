@@ -8,7 +8,9 @@
     "camelcase": "error",
     "comma-whitespace": "error",
     "deprecated-suicide": "error",
+    "error-reason": "off",
     "function-whitespace": "error",
+    "function-order": "off",
     "imports-on-top": "error",
     "indentation": ["error", 2],
     "lbrace": "error",
@@ -22,6 +24,7 @@
     "semicolon-whitespace": "error",
     "uppercase": "off",
     "variable-declarations": "error",
-    "whitespace": "error"
+    "whitespace": "error",
+    "security/no-block-members": "off"
   }
 }

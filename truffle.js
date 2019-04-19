@@ -1,5 +1,3 @@
-// Allows us to use ES6 in our migrations and tests.
-
 module.exports = {
   networks: {
     dev: {
@@ -20,6 +18,11 @@ module.exports = {
       network_id: 42,
       gas: 6e6,
       gasPrice: 20e9
+    }
+  },
+  compilers: {
+    solc: {
+      version: '0.5.7'
     }
   }
 }
