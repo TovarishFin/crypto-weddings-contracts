@@ -1,8 +1,14 @@
+const { setupContext } = require('../helpers/general')
+
 describe('when using core Wedding functionality', () => {
-  it('should say what up?', () => {
+  let context
+  before('setup context', async () => {
+    context = await setupContext()
+  })
+  it('context to be setup and expect to be global', () => {
     expect(true).to.equal(true)
 
     // eslint-disable-next-line
-    console.log('what up?')
+    console.log(context.owner.address)
   })
 })

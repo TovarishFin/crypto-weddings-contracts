@@ -16,7 +16,6 @@ module.exports = {
     'plugin:security/recommended'
   ],
   plugins: [
-    'compat',
     'prettier',
     'promise',
     'security'
@@ -61,7 +60,6 @@ module.exports = {
     xit: true
   },
   rules: {
-    'compat/compat': 'error',
     'import/first': 'error',
     'import/no-anonymous-default-export': 'error',
     'import/no-unassigned-import': 'error',

@@ -118,11 +118,17 @@ contract WeddingManager is Upgradeable {
     );
   }
 
-  function initialize()
+  function initialize(
+    address _weddingMaster
+  )
     external
     onlyOwner
     initOneTimeOnly
-  {}
+  {
+    require(isContract(_weddingMaster));
+
+    weddingMaster = _weddingMaster;
+  }
 
   function updateWeddingMaster(
     address _weddingMaster
