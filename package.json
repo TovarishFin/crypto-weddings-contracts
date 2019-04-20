@@ -10,12 +10,13 @@
     "lint:sol": "solium -d ./contracts",
     "lint:js": "eslint ./test",
     "start": "yarn ganache-cli -b 15 -d -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'",
-    "test": "waffle && mocha --timeout 15000"
+    "test": "waffle && node test/runTests.js"
   },
   "author": "Cody Lamson",
   "license": "MIT",
   "dependencies": {
     "babel-eslint": "^10.0.1",
+    "chai": "^4.2.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.1.0",
     "eslint-config-standard": "^12.0.0",
