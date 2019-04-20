@@ -7,21 +7,13 @@ import "./interfaces/IWedding.sol";
 
 
 // TODO: make this upgradeable
-contract WeddingManager2 is Ownable {
+contract WeddingManager is Ownable {
   address public weddingMaster;
 
   address[] public weddings;
   mapping (address => uint256) public weddingIndex;
   mapping (address => bool) public weddingExists;
   mapping (address => address) public weddingOf;
-
-  enum WeddingType {
-    Traditional,
-    ManAndMan,
-    WomanAndWoman,
-    ManAndOther,
-    WomanAndOther
-  }
 
   modifier onlyWedding() {
     require(weddingExists[msg.sender]);
@@ -94,7 +86,7 @@ contract WeddingManager2 is Ownable {
     uint256 _codeSize;
 
     assembly {
-      _codeSize := extcodesize(_weddingMaster)
+      _codeSize := extcodesize(_address)
     }
 
     return _codeSize > 0;
@@ -150,13 +142,13 @@ contract WeddingManager2 is Ownable {
     string calldata _name1,
     address _partner2,
     string calldata _name2,
-    WeddingType _weddingType
+    IWedding.WeddingType _weddingType
   )
     external
   {
-    WeddingProxy _newWedding = new WeddingProxy();
+    WeddingProxy _newWedding = new WeddingProxy(weddingMaster);
     address _newWeddingAddress = address(_newWedding);
-    addWedding(_newWedding, _partner1, _partner2);
+    addWedding(_newWeddingAddress, _partner1, _partner2);
     IWedding(_newWeddingAddress).initialize(
       _partner1,
       _name1,
@@ -217,7 +209,6 @@ contract WeddingManager2 is Ownable {
   }
 
   function emitWeddingPhotoUpdated(
-    address _wedding,
     string calldata _uri
   )
     external

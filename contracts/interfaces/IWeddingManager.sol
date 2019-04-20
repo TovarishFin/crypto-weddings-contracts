@@ -19,7 +19,6 @@ interface IWeddingManager {
     external;
 
   function emitWeddingPhotoUpdated(
-    address _wedding,
     string calldata _uri
   )
     external;

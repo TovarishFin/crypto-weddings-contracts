@@ -12,8 +12,9 @@ contract WeddingProxy {
   {
     require(isContract(_weddingMaster));
 
+    bytes32 _weddingMasterSlot = weddingMasterSlot;
     assembly {
-      sstore(weddingMaster_slot, _weddingMaster)
+      sstore(_weddingMasterSlot, _weddingMaster)
     }
   }
 
@@ -27,7 +28,7 @@ contract WeddingProxy {
     uint256 _codeSize;
 
     assembly {
-      _codeSize := extcodesize(_weddingMaster)
+      _codeSize := extcodesize(_address)
     }
 
     return _codeSize > 0;
@@ -38,8 +39,9 @@ contract WeddingProxy {
     view
     returns (address _weddingMaster)
   {
+    bytes32 _weddingMasterSlot = weddingMasterSlot;
     assembly {
-      _weddingMaster := sload(weddingMaster_slot)
+      _weddingMaster := sload(_weddingMasterSlot)
     }
   }
 
@@ -47,6 +49,7 @@ contract WeddingProxy {
     external
     payable
   {
+    bytes32 _weddingMasterSlot = weddingMasterSlot;
     assembly {
 
       // TODO: test with and without this... we might be able to get away with normal implementation rather than doing nothing like we are here...
@@ -54,7 +57,9 @@ contract WeddingProxy {
         return (1, 1)
       }
 
-      let _masterContract := sload(weddingMaster_slot)
+      let _ptr := mload(0x40)
+
+      let _masterContract := sload(_weddingMasterSlot)
       mstore(0x40, add(_ptr, 0x24))
 
       //
