@@ -62,37 +62,30 @@ contract WeddingProxy {
       let _masterContract := sload(_weddingMasterSlot)
       mstore(0x40, add(_ptr, 0x24))
 
-      //
-      // run delegate call using retrieved master contract
-      //
-
-      // calldatacopy(t, f, s) copy calldata to memory
       calldatacopy(
-        _ptr, // t = mem position to
-        0, // f = mem position from
-        calldatasize // s = size bytes
+        _ptr,
+        0,
+        calldatasize
       )
 
-      // delegatecall(g, a, in, insize, out, outsize) => 0 on error 1 on success
+
       let _delegatecallSuccess := delegatecall(
-        gas, // g = gas
-        _masterContract, // a = address (loaded from masterContract slot storage)
-        _ptr, // in = mem in mem[in..(in+insize)]
-        calldatasize, // insize = mem insize mem[in..(in+insize)]
-        _ptr, // out = mem out mem[out..(out+outsize)]
-        returndatasize // outsize = mem outsize mem[out..(out+outsize)]
+        gas,
+        _masterContract,
+        _ptr,
+        calldatasize,
+        _ptr,
+        returndatasize
       )
 
-      // revert if not successful
       if iszero(_delegatecallSuccess) {
         revert(0, 0)
       }
 
-      // returndatacopy(t, f, s) overwrite calldata with returndata to save space
       returndatacopy(
-        _ptr, // t = mem position to
-        0, // f = mem position from
-        returndatasize // s = size bytes
+        _ptr,
+        0,
+        returndatasize
       )
 
       return (_ptr, returndatasize)

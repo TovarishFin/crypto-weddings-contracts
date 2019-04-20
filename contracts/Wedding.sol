@@ -3,7 +3,7 @@ pragma solidity ^0.5.7;
 import "./interfaces/IWeddingManager.sol";
 
 
-contract Wedding { 
+contract Wedding {
   IWeddingManager public weddingManager;
   address public partner1;
   address public partner2;
@@ -92,10 +92,10 @@ contract Wedding {
   {
     require(isContract(msg.sender));
     require(_p1Address != address(0));
-    require(_p2Address != address(0)); 
+    require(_p2Address != address(0));
     require(bytes(_name1).length > 0);
     require(bytes(_name2).length > 0);
-    
+
     weddingManager = IWeddingManager(msg.sender);
     partner1 = _p1Address;
     p1Name = _name1;
@@ -111,8 +111,8 @@ contract Wedding {
     onlyFiance
     atEitherStage(Stage.Initialized, Stage.InProgress)
   {
-    msg.sender == partner1 
-      ? p1Answer = true 
+    msg.sender == partner1
+      ? p1Answer = true
       : p2Answer = true;
 
     if (p1Answer && p2Answer) {
@@ -124,7 +124,7 @@ contract Wedding {
 
       return;
     }
-    
+
     stage = Stage.InProgress;
 
     weddingManager.emitPartnerAccepts(msg.sender);
@@ -195,5 +195,5 @@ contract Wedding {
   {
     sendWeddingGift("");
   }
-}     
-      
+}
+

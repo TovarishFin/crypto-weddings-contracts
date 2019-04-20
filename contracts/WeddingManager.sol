@@ -2,12 +2,12 @@ pragma solidity ^0.5.7;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./WeddingProxy.sol";
+import "./Upgradeable.sol";
 
 import "./interfaces/IWedding.sol";
 
 
-// TODO: make this upgradeable
-contract WeddingManager is Ownable {
+contract WeddingManager is Upgradeable {
   address public weddingMaster;
 
   address[] public weddings;
@@ -72,22 +72,6 @@ contract WeddingManager is Ownable {
     string message
   );
 
-  function isContract(
-    address _address
-  )
-    internal
-    view
-    returns (bool)
-  {
-    uint256 _codeSize;
-
-    assembly {
-      _codeSize := extcodesize(_address)
-    }
-
-    return _codeSize > 0;
-  }
-
   function addWedding(
     address _wedding,
     address _partner1,
@@ -121,10 +105,10 @@ contract WeddingManager is Ownable {
     uint256 _index = weddingIndex[_wedding];
     weddings[_index] = weddings[weddings.length - 1];
     weddings.length--;
-    
+
     delete weddingIndex[_wedding];
     delete weddingExists[_wedding];
-    delete weddingOf[_partner1]; 
+    delete weddingOf[_partner1];
     delete weddingOf[_partner2];
 
     emit WeddingRemoved(
@@ -133,6 +117,12 @@ contract WeddingManager is Ownable {
       _partner2
     );
   }
+
+  function initialize()
+    external
+    onlyOwner
+    initOneTimeOnly
+  {}
 
   function updateWeddingMaster(
     address _weddingMaster
@@ -144,7 +134,7 @@ contract WeddingManager is Ownable {
 
     weddingMaster = _weddingMaster;
   }
-  
+
   function startWedding(
     address _partner1,
     string calldata _name1,
