@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "description": "smart contracts for blockchain marriage dapp",
   "scripts": {
-    "lint:js": "eslint . --fix",
-    "lint:contracts": "solium -d ./contracts/*/**",
-    "start": "yarn ganache-cli -b 15 -d -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'",
-    "migrate:dev": "yarn truffle migrate --network dev --reset",
-    "test": "truffle test",
-    "clean:contracts": "rimraf build/contracts",
+    "build": "waffle",
+    "clean:build": "rimraf build && waffle",
+    "clean:contracts": "rimraf build",
     "clean:install": "rimraf node_modules && yarn install",
-    "build": "truffle compile"
+    "lint:sol": "solium -d ./contracts",
+    "lint:js": "eslint ./test",
+    "start": "yarn ganache-cli -b 15 -d -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'",
+    "test": "waffle && mocha --timeout 15000"
   },
   "author": "Cody Lamson",
   "license": "MIT",
@@ -27,11 +27,12 @@
     "eslint-plugin-promise": "^4.1.1",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-standard": "^4.0.0",
+    "ethereum-waffle": "^2.0.9",
+    "ethers": "^4.0.27",
     "ganache-cli": "^6.4.3",
     "openzeppelin-solidity": "^2.2.0",
     "prettier": "^1.17.0",
     "rimraf": "^2.6.3",
-    "solium": "^1.2.4",
-    "truffle": "^5.0.13"
+    "solium": "^1.2.4"
   }
 }
