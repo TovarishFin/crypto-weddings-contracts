@@ -6,28 +6,18 @@ import "./FlexibleWedding.sol";
 
 contract WeddingManager is Ownable {
 
-  uint256 public marriageFee = 25e16;
-  uint256 public divorceFee = 25e17;
   address[] public weddings;
   address[] public verifiedWeddings;
   // mapping of fiance to wedding address
   mapping(address => address) public weddingOf;
   // used to find wedding array index when pushed
   mapping(address => uint) public weddingIndex;
+  // used for checking on if a wedding exists
+  mapping(address => bool) public weddingExists;
   // used to know what to show on the dapp
   mapping(address => bool) public verifiedWedding;
   // used to find verifiedWedding array index when pushed
   mapping(address => uint) public verifiedWeddingIndex;
-
-  modifier weddingExists(address _weddingAddress) {
-    require(weddingIndex[_weddingAddress] != 0);
-    _;
-  }
-
-  modifier feePaid() {
-    require(msg.value == marriageFee);
-    _;
-  }
 
   modifier onlyWedding() {
     require(weddingIndex[msg.sender] != 0);
@@ -90,14 +80,9 @@ contract WeddingManager is Ownable {
     uint256 indexed value
   );
 
-  constructor()
-    public
-  {
-    // keep placeholder to ensure no other 0 indexed in mapping
-    weddings.push(address(0));
-  }
-
-  // event triggers
+  //
+  // start event triggers
+  //
 
   function triggerDivorce(
     address _partner1,
@@ -198,7 +183,9 @@ contract WeddingManager is Ownable {
     return true;
   }
 
+  //
   // end event triggers
+  //
 
   function validateWedding(
     address _fianceAddress,
@@ -251,17 +238,15 @@ contract WeddingManager is Ownable {
   )
     external
     onlyWedding
-    returns (bool)
   {
     weddingOf[_participant1] = address(0);
     weddingOf[_participant2] = address(0);
     weddings[weddingIndex[msg.sender]] = address(0);
     weddingIndex[msg.sender] = uint256(0);
     verifiedWedding[msg.sender] = false;
-    return true;
   }
 
-  function listWeddings()
+  function allWeddings()
     external
     view
     returns (address[] memory)
@@ -269,7 +254,7 @@ contract WeddingManager is Ownable {
     return weddings;
   }
 
-  function weddingsLength()
+  function allWeddingsLength()
     external
     view
     returns (uint256)
@@ -277,7 +262,7 @@ contract WeddingManager is Ownable {
     return weddings.length;
   }
 
-  function listVerifiedWeddings()
+  function allVerfiedWeddings()
     external
     view
     returns (address[] memory)
@@ -285,7 +270,7 @@ contract WeddingManager is Ownable {
     return verifiedWeddings;
   }
 
-  function verifiedWeddingsLength()
+  function allVerifiedWeddingsLength()
     external
     view
     returns (uint256)
@@ -312,36 +297,8 @@ contract WeddingManager is Ownable {
     }
   }
 
-  function changeMarriageFee(
-    uint256 _newFee
-  )
-    external
-    onlyOwner
-  {
-    marriageFee = _newFee;
-  }
-
-  function changeDivorceFee(
-    uint256 _newFee
-  )
-    external
-    onlyOwner
-  {
-    divorceFee = _newFee;
-  }
-
-  function collectFees()
-    external
-    onlyOwner
-  {
-    uint256 _bal = address(this).balance;
-    require(_bal > 0);
-    msg.sender.transfer(_bal);
-  }
-
   // end owner functions
 
-  // start wedding if fee is paid
   function startWedding(
     address payable _partner1Address,
     string calldata _partner1Name,
@@ -352,8 +309,6 @@ contract WeddingManager is Ownable {
     uint256 _weddingType
   )
     external
-    payable
-    feePaid
     returns (address)
   {
     validateWedding(
@@ -383,13 +338,5 @@ contract WeddingManager is Ownable {
       _partner2Name
     );
     return address(_newMarriage);
-  }
-
-  // do not allow random money to come into the contract
-  function()
-    external
-    payable
-  {
-    revert();
   }
 }
