@@ -24,17 +24,13 @@ contract WeddingManager is Ownable {
   event WeddingAdded(
     address indexed wedding,
     address indexed partner1,
-    address indexed partner2,
-    string name1,
-    string name2
+    address indexed partner2
   );
 
   event WeddingRemoved(
     address indexed wedding,
     address indexed partner1,
-    address indexed partner2,
-    string p1Name,
-    string p2Name
+    address indexed partner2
   );
 
   event PartnerAccepts(
@@ -104,6 +100,12 @@ contract WeddingManager is Ownable {
     weddings.push(_wedding);
     weddingOf[_partner1] = _wedding;
     weddingOf[_partner2] = _wedding;
+
+    emit WeddingAdded(
+      _wedding,
+      _partner1,
+      _partner2
+    );
   }
 
   function removeWedding(
@@ -124,6 +126,12 @@ contract WeddingManager is Ownable {
     delete weddingExists[_wedding];
     delete weddingOf[_partner1]; 
     delete weddingOf[_partner2];
+
+    emit WeddingRemoved(
+      _wedding,
+      _partner1,
+      _partner2
+    );
   }
 
   function updateWeddingMaster(

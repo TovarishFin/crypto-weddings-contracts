@@ -4,7 +4,7 @@ pragma solidity ^0.5.7;
 contract WeddingProxy {
 
   bytes32 internal constant weddingMasterSlot = keccak256("WeddingMaster");
-  
+
   constructor(
     address _weddingMaster
   )
