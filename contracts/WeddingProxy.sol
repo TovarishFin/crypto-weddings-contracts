@@ -17,6 +17,22 @@ contract WeddingProxy {
     }
   }
 
+  function isContract(
+    address _address
+  )
+    internal
+    view
+    returns (bool)
+  {
+    uint256 _codeSize;
+
+    assembly {
+      _codeSize := extcodesize(_weddingMaster)
+    }
+
+    return _codeSize > 0;
+  }
+
   function weddingMaster()
     public
     view

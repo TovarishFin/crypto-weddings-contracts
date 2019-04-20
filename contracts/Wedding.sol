@@ -1,7 +1,10 @@
 pragma solidity ^0.5.7;
 
+import "./interfaces/IWeddingManager.sol";
+
 
 contract Wedding { 
+  IWeddingManager public weddingManager;
   address public partner1;
   address public partner2;
   string public p1Name;
@@ -35,7 +38,7 @@ contract Wedding {
   modifier atStage(
     Stage _stage
   ) {
-    require(stage = _stage);
+    require(stage == _stage);
 
     _;
   }
@@ -46,7 +49,7 @@ contract Wedding {
   ) {
     require(
       stage == _stage1 ||
-      stage ==  _stage2
+      stage == _stage2
     );
 
     _;
@@ -55,34 +58,52 @@ contract Wedding {
   modifier onlyFiance() {
     require(
       msg.sender == partner1 ||
-      msg.sener == partner2
+      msg.sender == partner2
     );
 
     _;
   }
 
+  function isContract(
+    address _address
+  )
+    internal
+    view
+    returns (bool)
+  {
+    uint256 _codeSize;
+
+    assembly {
+      _codeSize := extcodesize(_address)
+    }
+
+    return _codeSize > 0;
+  }
+
   function initialize(
     address _p1Address,
-    string calldata _p1Name,
+    string calldata _name1,
     address _p2Address,
-    string calldata _p2Name,
+    string calldata _name2,
     WeddingType _weddingType
   )
     external
     atStage(Stage.Uninitialized)
   {
+    require(isContract(msg.sender));
     require(_p1Address != address(0));
     require(_p2Address != address(0)); 
-    require(bytes(_p1Name).length > 0);
-    require(bytes(_p2Name).length > 0);
+    require(bytes(_name1).length > 0);
+    require(bytes(_name2).length > 0);
     
+    weddingManager = IWeddingManager(msg.sender);
     partner1 = _p1Address;
-    p1Name = _p1name;
+    p1Name = _name1;
     partner2 = _p2Address;
-    p2Name = _p22ame;
+    p2Name = _name2;
     weddingType = _weddingType;
 
-    stage = Stages.Initialized;
+    stage = Stage.Initialized;
   }
 
   function acceptProposal()
@@ -99,10 +120,14 @@ contract Wedding {
       dateMarried = block.timestamp;
       stage = Stage.Married;
 
+      weddingManager.emitMarried(partner1, partner2);
+
       return;
     }
     
     stage = Stage.InProgress;
+
+    weddingManager.emitPartnerAccepts(msg.sender);
   }
 
   function rejectProposal()
@@ -110,19 +135,21 @@ contract Wedding {
     onlyFiance
     atEitherStage(Stage.Initialized, Stage.InProgress)
   {
-    msg.sender == partner1
-      ? selfdestruct(partner1)
-      : selfdestruct(partern2);
+    weddingManager.emitWeddingCancelled(msg.sender);
+
+    selfdestruct(msg.sender);
   }
 
   function updateWeddingPhoto(
-    string calldata _weddingPhoto
+    string calldata _uri
   )
     external
     onlyFiance
-    atStage(stage.Married)
+    atStage(Stage.Married)
   {
-    weddingPhoto = _weddingPhoto;
+    weddingPhoto = _uri;
+
+    weddingManager.emitWeddingPhotoUpdated(_uri);
   }
 
   function divorce()
@@ -132,12 +159,17 @@ contract Wedding {
   {
     require(address(this).balance == 0);
 
-    msg.sender == parter1
+    msg.sender == partner1
       ? p1Answer = false
       : p2Answer = false;
 
+    weddingManager.emitPartnerDivorces(msg.sender);
+
     if (!p1Answer && !p2Answer) {
-      selfdestruct(partner1)
+      weddingManager.divorce(partner1, partner2);
+      weddingManager.emitDivorced(partner1, partner2);
+
+      selfdestruct(msg.sender);
     }
   }
 
@@ -148,11 +180,20 @@ contract Wedding {
     msg.sender.transfer(address(this).balance);
   }
 
+  function sendWeddingGift(
+    string memory _message
+  )
+    public
+    payable
+  {
+    weddingManager.emitGiftReceived(msg.sender, msg.value, _message);
+  }
+
   function()
     external
     payable
   {
-    
+    sendWeddingGift("");
   }
 }     
       
