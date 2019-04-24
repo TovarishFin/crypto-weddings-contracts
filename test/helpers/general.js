@@ -2,6 +2,8 @@ const WeddingManager = require('../../build/WeddingManager')
 const Wedding = require('../../build/Wedding')
 const UpgradeableProxy = require('../../build/UpgradeableProxy')
 const chalk = require('chalk')
+const assert = require('assert')
+
 const {
   deployContract,
   createMockProvider,
@@ -13,31 +15,13 @@ const addressZero = `0x${'0'.repeat(40)}`
 const bytes32Zero = '0x' + '00'.repeat(32)
 const gasLimit = 5e6
 
-const setupContext = async () => {
-  const provider = createMockProvider()
-  const wallets = getWallets(provider)
-  const [owner, partner1, partner2, other] = wallets
-
-  const wngMaster = await deployContract(owner, Wedding)
-  const wmrMaster = await deployContract(owner, WeddingManager)
-
-  const wmrProxy = await deployContract(owner, UpgradeableProxy, [
-    wmrMaster.address
-  ])
-  const wmr = new Contract(wmrProxy.address, WeddingManager.abi, owner)
-  await wmr.initialize(wngMaster.address, { gasLimit })
-
-  return {
-    provider,
-    wallets,
-    owner,
-    partner1,
-    partner2,
-    other,
-    wngMaster,
-    wmrMaster,
-    wmrProxy,
-    wmr
+const assertRevert = async promise => {
+  try {
+    await promise
+    assert.fail('Expected revert not received')
+  } catch (error) {
+    const revertFound = error.message.search('revert') >= 0
+    assert(revertFound, `Expected "revert", got ${error} instead`)
   }
 }
 
@@ -88,11 +72,39 @@ const getAllSimpleStorage = async (context, addr) => {
   return simpleStorage
 }
 
+const setupContext = async () => {
+  const provider = createMockProvider()
+  const wallets = getWallets(provider)
+  const [owner, partner1, partner2, other] = wallets
+
+  const wngMaster = await deployContract(owner, Wedding)
+  const wmrMaster = await deployContract(owner, WeddingManager)
+
+  const wmrProxy = await deployContract(owner, UpgradeableProxy, [
+    wmrMaster.address
+  ])
+  const wmr = new Contract(wmrProxy.address, WeddingManager.abi, owner)
+
+  return {
+    provider,
+    wallets,
+    owner,
+    partner1,
+    partner2,
+    other,
+    wngMaster,
+    wmrMaster,
+    wmrProxy,
+    wmr
+  }
+}
+
 module.exports = {
   addressZero,
   bytes32Zero,
   gasLimit,
   setupContext,
+  assertRevert,
   waitForEvent,
   getAllSimpleStorage
 }

@@ -19,18 +19,10 @@ contract UpgradeableProxy is Upgradeable {
     payable
   {
     assembly {
-
-      if lt(gas, 2301) {
-        return (1, 1)
-      }
-
-      let _ptr := mload(0x40)
-
-      let _masterContract := mload(masterContract_slot)
-      mstore(0x40, add(_ptr, 0x24))
+      let _masterContract := sload(masterContract_slot)
 
       calldatacopy(
-        _ptr,
+        0x0,
         0,
         calldatasize
       )
@@ -38,9 +30,9 @@ contract UpgradeableProxy is Upgradeable {
       let _delegatecallSuccess := delegatecall(
         gas,
         _masterContract,
-        _ptr,
+        0x0,
         calldatasize,
-        _ptr,
+        0x0,
         returndatasize
       )
 
@@ -49,12 +41,12 @@ contract UpgradeableProxy is Upgradeable {
       }
 
       returndatacopy(
-        _ptr,
+        0x0,
         0,
         returndatasize
       )
 
-      return (_ptr, returndatasize)
+      return (0x0, returndatasize)
     }
   }
 }

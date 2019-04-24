@@ -57,13 +57,11 @@ contract WeddingProxy {
         return (1, 1)
       }
 
-      let _ptr := mload(0x40)
 
       let _masterContract := sload(_weddingMasterSlot)
-      mstore(0x40, add(_ptr, 0x24))
 
       calldatacopy(
-        _ptr,
+        0x0,
         0,
         calldatasize
       )
@@ -72,9 +70,9 @@ contract WeddingProxy {
       let _delegatecallSuccess := delegatecall(
         gas,
         _masterContract,
-        _ptr,
+        0x0,
         calldatasize,
-        _ptr,
+        0x0,
         returndatasize
       )
 
@@ -83,12 +81,12 @@ contract WeddingProxy {
       }
 
       returndatacopy(
-        _ptr,
+        0x0,
         0,
         returndatasize
       )
 
-      return (_ptr, returndatasize)
+      return (0x0, returndatasize)
     }
   }
 }
