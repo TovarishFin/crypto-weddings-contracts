@@ -1,7 +1,7 @@
 const { setupContext, assertRevert } = require('../helpers/general')
-const { testInitialize } = require('../helpers/wmr')
+const { testInitialize, testUpdateWeddingMaster } = require('../helpers/wmr')
 
-describe.only('when using core WeddingManager functionality', () => {
+describe.only('when setting base settings for weddngManager', () => {
   let owner
   let other
   let context
@@ -12,15 +12,31 @@ describe.only('when using core WeddingManager functionality', () => {
     other = context.other
   })
 
-  it('should initialize as owner with correct address', async () => {
-    const { wmrMaster } = context
-
-    await testInitialize(context, wmrMaster.address, owner)
-  })
-
   it('should NOT initialize as NOT owner with correct address', async () => {
     const { wmrMaster } = context
 
-    await assertRevert(testInitialize(context, wmrMaster.address, other))
+    await assertRevert(testInitialize(context, other, wmrMaster.address))
+  })
+
+  it('should initialize as owner with correct address', async () => {
+    const { wmrMaster } = context
+
+    await testInitialize(context, owner, wmrMaster.address)
+  })
+
+  it('should NOT updateWeddingMaster as NOT owner', async () => {
+    const { wngMaster } = context
+    await assertRevert(
+      testUpdateWeddingMaster(context, other, wngMaster.address)
+    )
+  })
+
+  it('should NOT updateWeddingMaster with NON-contract address', async () => {
+    await assertRevert(testUpdateWeddingMaster(context, owner, other.address))
+  })
+
+  it('should updateWeddingMaster as owner', async () => {
+    const { wngMaster } = context
+    await testUpdateWeddingMaster(context, owner, wngMaster.address)
   })
 })

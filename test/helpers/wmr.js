@@ -1,6 +1,6 @@
 const { gasLimit } = require('../helpers/general')
 
-const testInitialize = async (context, weddingMasterAddress, wallet) => {
+const testInitialize = async (context, wallet, weddingMasterAddress) => {
   const { wmr: unconnected } = context
   const wmr = unconnected.connect(wallet)
 
@@ -19,6 +19,31 @@ const testInitialize = async (context, weddingMasterAddress, wallet) => {
   expect(postInitialized).to.eq(true, 'postInitialized should be true')
 }
 
+const testUpdateWeddingMaster = async (
+  context,
+  wallet,
+  weddingMasterAddress
+) => {
+  const { wmr: unconnected } = context
+  const wmr = unconnected.connect(wallet)
+
+  const preWeddingMaster = await wmr.weddingMaster()
+
+  await wmr.updateWeddingMaster(weddingMasterAddress, { gasLimit })
+
+  const postWeddingMaster = await wmr.weddingMaster()
+
+  expect(preWeddingMaster).to.not.eq(
+    postWeddingMaster,
+    'preWeddingMaster should not match postWeddingMaster'
+  )
+  expect(postWeddingMaster).to.eq(
+    weddingMasterAddress,
+    'postWeddingMaster should match weddingMasterAddress'
+  )
+}
+
 module.exports = {
-  testInitialize
+  testInitialize,
+  testUpdateWeddingMaster
 }

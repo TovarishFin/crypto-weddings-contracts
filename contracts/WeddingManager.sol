@@ -125,7 +125,10 @@ contract WeddingManager is Upgradeable {
     onlyOwner
     initOneTimeOnly
   {
-    require(isContract(_weddingMaster));
+    require(
+      isContract(_weddingMaster), 
+      "weddingMaster must be a contract"
+    );
 
     weddingMaster = _weddingMaster;
   }
@@ -136,7 +139,14 @@ contract WeddingManager is Upgradeable {
     external
     onlyOwner
   {
-    require(isContract(_weddingMaster));
+    require(
+      isContract(_weddingMaster), 
+      "weddingMaster must be a contract"
+    );
+    require(
+      weddingMaster != _weddingMaster, 
+      "_weddingMaster must be different that weddingMaster"
+    );
 
     weddingMaster = _weddingMaster;
   }
