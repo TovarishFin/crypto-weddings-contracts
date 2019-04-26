@@ -1,13 +1,18 @@
 const { setupContext, assertRevert } = require('../helpers/general')
-const { testInitialize, testUpdateWeddingMaster } = require('../helpers/wmr')
+const {
+  testInitialize,
+  testUpdateWeddingMaster,
+  testStartWedding,
+  testUpgradeMaster
+} = require('../helpers/wmr')
 
-describe.only('when setting base settings for weddngManager', () => {
-  let owner
-  let other
-  let context
+let owner
+let other
+let context
 
+describe('when setting base settings for weddngManager', () => {
   before('setup context', async () => {
-    context = await setupContext()
+    context = await setupContext(true)
     owner = context.owner
     other = context.other
   })
@@ -38,5 +43,44 @@ describe.only('when setting base settings for weddngManager', () => {
   it('should updateWeddingMaster as owner', async () => {
     const { wngMaster } = context
     await testUpdateWeddingMaster(context, owner, wngMaster.address)
+  })
+})
+
+describe('when upgrading weddingManager', async () => {
+  let wmrMasterStub
+
+  before('setup context', async () => {
+    context = await setupContext()
+    wmrMasterStub = context.wmrMasterStub.address
+  })
+
+  it('should NOT upgrade to stub if NOT owner', async () => {
+    await assertRevert(testUpgradeMaster(context, other, wmrMasterStub, true))
+  })
+
+  it('should NOT upgrade to stub if NOT contract', async () => {
+    await assertRevert(testUpgradeMaster(context, owner, other.address, true))
+  })
+
+  it('should upgrade to stub version', async () => {
+    await testUpgradeMaster(context, owner, wmrMasterStub, true)
+  })
+})
+
+describe('when using weddingManager core functionality', async () => {
+  let partner1
+  let partner2
+
+  before('setup context', async () => {
+    context = await setupContext()
+    owner = context.owner
+    other = context.other
+    partner1 = context.partner1
+    partner2 = context.partner2
+    await testUpgradeMaster(context, owner, context.wmrMasterStub.address, true)
+  })
+
+  it('should startWedding', async () => {
+    await testStartWedding(context, partner1, partner2, 'bob', 'alice', 1)
   })
 })

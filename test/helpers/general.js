@@ -1,4 +1,5 @@
 const WeddingManager = require('../../build/WeddingManager')
+const WeddingManagerStub = require('../../build/WeddingManagerStub')
 const Wedding = require('../../build/Wedding')
 const UpgradeableProxy = require('../../build/UpgradeableProxy')
 const chalk = require('chalk')
@@ -72,18 +73,23 @@ const getAllSimpleStorage = async (context, addr) => {
   return simpleStorage
 }
 
-const setupContext = async () => {
+const setupContext = async noInit => {
   const provider = createMockProvider()
   const wallets = getWallets(provider)
   const [owner, partner1, partner2, other] = wallets
 
   const wngMaster = await deployContract(owner, Wedding)
   const wmrMaster = await deployContract(owner, WeddingManager)
+  const wmrMasterStub = await deployContract(owner, WeddingManagerStub)
 
   const wmrProxy = await deployContract(owner, UpgradeableProxy, [
     wmrMaster.address
   ])
   const wmr = new Contract(wmrProxy.address, WeddingManager.abi, owner)
+
+  if (!noInit) {
+    wmr.initialize(wngMaster.address, { gasLimit })
+  }
 
   return {
     provider,
@@ -94,6 +100,7 @@ const setupContext = async () => {
     other,
     wngMaster,
     wmrMaster,
+    wmrMasterStub,
     wmrProxy,
     wmr
   }

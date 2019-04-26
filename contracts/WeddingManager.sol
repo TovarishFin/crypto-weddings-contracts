@@ -79,6 +79,8 @@ contract WeddingManager is Upgradeable {
   )
     internal
   {
+    require(weddingOf[_partner1] == address(0));
+    require(weddingOf[_partner2] == address(0));
     weddingExists[_wedding] = true;
     weddingIndex[_wedding] = weddings.length;
     weddings.push(_wedding);
@@ -204,6 +206,26 @@ contract WeddingManager is Upgradeable {
     addWedding(_wedding, _partner1, _partner2);
   }
 
+  //
+  // start getters
+  //
+
+  function weddingsLength()
+    external
+    view
+    returns (uint256)
+  {
+    return weddings.length;
+  }
+
+  //
+  // start getters
+  //
+
+  //
+  // start centralized event emitters
+  //
+
   function emitPartnerAccepts(
     address _partner
   )
@@ -275,4 +297,9 @@ contract WeddingManager is Upgradeable {
       _message
     );
   }
+
+  //
+  // end centralized event emitters
+  //
 }
+ 
