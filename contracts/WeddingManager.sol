@@ -79,6 +79,7 @@ contract WeddingManager is Upgradeable {
   )
     internal
   {
+    require(!weddingExists[_wedding]);
     require(weddingOf[_partner1] == address(0));
     require(weddingOf[_partner2] == address(0));
     weddingExists[_wedding] = true;
@@ -103,6 +104,8 @@ contract WeddingManager is Upgradeable {
   {
     require(weddingExists[_wedding]);
     require(weddings.length > 0);
+    require(weddingOf[_partner1] == _wedding);
+    require(weddingOf[_partner2] == _wedding);
 
     uint256 _index = weddingIndex[_wedding];
     weddings[_index] = weddings[weddings.length - 1];

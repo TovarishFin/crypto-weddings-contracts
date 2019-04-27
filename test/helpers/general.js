@@ -3,7 +3,6 @@ const WeddingManagerStub = require('../../build/WeddingManagerStub')
 const Wedding = require('../../build/Wedding')
 const UpgradeableProxy = require('../../build/UpgradeableProxy')
 const chalk = require('chalk')
-const assert = require('assert')
 
 const {
   deployContract,
@@ -17,13 +16,7 @@ const bytes32Zero = '0x' + '00'.repeat(32)
 const gasLimit = 5e6
 
 const assertRevert = async promise => {
-  try {
-    await promise
-    assert.fail('Expected revert not received')
-  } catch (error) {
-    const revertFound = error.message.search('revert') >= 0
-    assert(revertFound, `Expected "revert", got ${error} instead`)
-  }
+  return expect(promise).to.be.reverted
 }
 
 const waitForEvent = (contract, eventName, optTimeout) =>

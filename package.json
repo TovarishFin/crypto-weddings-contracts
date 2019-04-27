@@ -10,7 +10,8 @@
     "lint:sol": "solium -d ./contracts",
     "lint:js": "eslint ./test",
     "start": "yarn ganache-cli -b 15 -d -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'",
-    "test": "waffle && node test/runTests.js"
+    "test": "waffle && node test/runTests.js",
+    "test:watch": "nodemon -w test -x yarn test"
   },
   "author": "Cody Lamson",
   "license": "MIT",
@@ -31,6 +32,7 @@
     "ethereum-waffle": "^2.0.9",
     "ethers": "^4.0.27",
     "ganache-cli": "^6.4.3",
+    "nodemon": "^1.18.11",
     "openzeppelin-solidity": "^2.2.0",
     "prettier": "^1.17.0",
     "rimraf": "^2.6.3",
