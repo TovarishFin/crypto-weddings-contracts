@@ -162,7 +162,7 @@ describe('when using weddingManager owner functionality', async () => {
   })
 })
 
-describe.only('when emitting events from a wedding', async () => {
+describe('when emitting events from a wedding', async () => {
   let wmr
   let weddingStub
   let p1Address

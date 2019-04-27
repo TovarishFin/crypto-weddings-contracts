@@ -94,6 +94,8 @@ const testStartWedding = async (
     'postWeddingOfP2 should match postWeddingAddress'
   )
   expect(postWeddingExists).to.eq(true)
+
+  return postWeddingAddress
 }
 
 const testUpgradeMaster = async (context, wallet, master, upgradeToStub) => {
