@@ -106,6 +106,18 @@ contract Wedding {
     stage = Stage.Initialized;
   }
 
+  function updateVows(
+    string calldata _vows
+  )
+    external
+    onlyFiance
+    atEitherStage(Stage.Initialized, Stage.InProgress)
+  {
+    msg.sender == partner1
+      ? p1Vows = _vows
+      : p2Vows = _vows;
+  }
+
   function acceptProposal()
     external
     onlyFiance

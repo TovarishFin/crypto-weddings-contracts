@@ -157,7 +157,6 @@ contract WeddingManager is Upgradeable {
   }
 
   function startWedding(
-    address _partner1,
     string calldata _name1,
     address _partner2,
     string calldata _name2,
@@ -167,11 +166,11 @@ contract WeddingManager is Upgradeable {
   {
     WeddingProxy _newWedding = new WeddingProxy(weddingMaster);
     address _newWeddingAddress = address(_newWedding);
-    addWedding(_newWeddingAddress, _partner1, _partner2);
+    addWedding(_newWeddingAddress, msg.sender, _partner2);
     IWedding(_newWeddingAddress).initialize(
-      _partner1,
+      msg.sender,
       _name1,
-      _partner1,
+      _partner2,
       _name2,
       _weddingType
     );

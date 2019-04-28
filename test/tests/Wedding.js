@@ -1,9 +1,45 @@
-const { setupContext } = require('../helpers/general')
-const { testStartWedding } = require('../helpers/wmr')
+const {
+  setupContext,
+  assertRevert,
+  addressZero
+} = require('../helpers/general')
+const { testStartWedding, testUpdateVows } = require('../helpers/wng')
 
-describe.only('when creating a new wedding', () => {
+describe('when creating a new wedding', () => {
   let context
-  let wng
+  let partner1
+  let partner2
+  const name1 = 'bob'
+  const name2 = 'alice'
+  const emptyWallet = { address: addressZero }
+
+  before('setup context', async () => {
+    context = await setupContext()
+    partner1 = context.partner1
+    partner2 = context.partner1
+  })
+
+  it('should NOT startNewWedding with empty partner2', async () => {
+    await assertRevert(
+      testStartWedding(context, partner1, emptyWallet, name1, name2, 1)
+    )
+  })
+
+  it('should NOT startWedding with empty name1', async () => {
+    await assertRevert(
+      testStartWedding(context, partner1, partner2, '', name2, 1)
+    )
+  })
+
+  it('should NOT startWedding with empty name2', async () => {
+    await assertRevert(
+      testStartWedding(context, partner1, partner2, name1, '', 1)
+    )
+  })
+})
+
+describe('when using core Wedding functionality', () => {
+  let context
   let partner1
   let partner2
   const name1 = 'bob'
@@ -13,19 +49,23 @@ describe.only('when creating a new wedding', () => {
     context = await setupContext()
     partner1 = context.partner1
     partner2 = context.partner1
-    wng = await testStartWedding(context, partner1, partner2, name1, name2, 1)
+    context = await testStartWedding(
+      context,
+      partner1,
+      partner2,
+      name1,
+      name2,
+      1
+    )
   })
-})
 
-describe('when using core Wedding functionality', () => {
-  let context
-  before('setup context', async () => {
-    context = await setupContext()
+  it('should updateVows as partner1', async () => {
+    const vows = 'I will do stuff'
+    await testUpdateVows(context, partner1, vows)
   })
-  it('context to be setup and expect to be global', () => {
-    expect(true).to.equal(true)
 
-    // eslint-disable-next-line
-    console.log(context.owner.address)
+  it('should updateVows as partner2', async () => {
+    const vows = 'I will do things'
+    await testUpdateVows(context, partner2, vows)
   })
 })

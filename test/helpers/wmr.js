@@ -60,7 +60,7 @@ const testStartWedding = async (
   const preWeddingOfP1 = await wmr.weddingOf(p1Address)
   const preWeddingOfP2 = await wmr.weddingOf(p2Address)
 
-  const tx = wmr.startWedding(p1Address, name1, p2Address, name2, weddingType, {
+  const tx = wmr.startWedding(name1, p2Address, name2, weddingType, {
     gasLimit
   })
 
@@ -93,7 +93,7 @@ const testStartWedding = async (
     postWeddingAddress,
     'postWeddingOfP2 should match postWeddingAddress'
   )
-  expect(postWeddingExists).to.eq(true)
+  expect(postWeddingExists).to.eq(true, 'postWeddingExists should be true')
 
   return postWeddingAddress
 }

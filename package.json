@@ -11,7 +11,7 @@
     "lint:js": "eslint ./test",
     "start": "yarn ganache-cli -b 15 -d -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'",
     "test": "waffle && node test/runTests.js",
-    "test:watch": "nodemon -w test -x yarn test"
+    "test:watch": "nodemon -w test -w contracts -e js,json,sol -x yarn test"
   },
   "author": "Cody Lamson",
   "license": "MIT",
