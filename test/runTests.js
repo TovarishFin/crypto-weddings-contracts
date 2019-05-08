@@ -10,7 +10,7 @@ const fs = require('fs')
 const path = require('path')
 
 // Instantiate a Mocha instance.
-const mocha = new Mocha()
+const mocha = new Mocha({ timeout: 5000 })
 
 const testDir = 'test/tests'
 

@@ -32,12 +32,12 @@ const waitForEvent = (contract, eventName, optTimeout) =>
       return resolve(false)
     }, optTimeout || 5000)
 
-    contract.on(eventName, (x, xx, xxx, xxxx) => {
+    contract.on(eventName, (...returns) => {
       contract.removeAllListeners(eventName)
       clearTimeout(timeout)
       // this function is really unreliable and returns args in different
       // param locations...
-      const eventData = [x, xx, xxx, xxxx].reduce((acc, item) => {
+      const eventData = returns.reduce((acc, item) => {
         if (item && item.args) {
           return item
         } else {

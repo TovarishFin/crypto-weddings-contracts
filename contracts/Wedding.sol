@@ -93,6 +93,7 @@ contract Wedding {
     require(isContract(msg.sender));
     require(_p1Address != address(0));
     require(_p2Address != address(0));
+    require(_p1Address != _p2Address);
     require(bytes(_name1).length > 0);
     require(bytes(_name2).length > 0);
 
@@ -159,6 +160,10 @@ contract Wedding {
     onlyFiance
     atStage(Stage.Married)
   {
+    require(
+      keccak256(bytes(_uri)) != 
+      keccak256(bytes(weddingPhoto))
+    );
     weddingPhoto = _uri;
 
     weddingManager.emitWeddingPhotoUpdated(_uri);
@@ -208,4 +213,3 @@ contract Wedding {
     sendWeddingGift("");
   }
 }
-
