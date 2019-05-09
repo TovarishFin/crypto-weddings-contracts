@@ -72,6 +72,12 @@ contract WeddingManager is Upgradeable {
     string message
   );
 
+  event GiftClaimed(
+    address indexed wedding,
+    address indexed claimer,
+    uint256 value
+  );
+
   function addWedding(
     address _wedding,
     address _partner1,
@@ -299,7 +305,20 @@ contract WeddingManager is Upgradeable {
       _message
     );
   }
-
+  
+  function emitGiftClaimed(
+    address _claimer,
+    uint256 _value
+  )
+    external
+    onlyWedding
+  {
+    emit GiftClaimed(
+      msg.sender,
+      _claimer,
+      _value
+    );
+  }
   //
   // end centralized event emitters
   //

@@ -194,7 +194,10 @@ contract Wedding {
     external
     onlyFiance
   {
-    msg.sender.transfer(address(this).balance);
+    uint256 _contractBalance = address(this).balance;
+    msg.sender.transfer(_contractBalance);
+
+    weddingManager.emitGiftClaimed(msg.sender, _contractBalance);
   }
 
   function sendWeddingGift(

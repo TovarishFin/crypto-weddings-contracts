@@ -229,11 +229,53 @@ const testSendWeddingGift = async (context, wallet, value, message) => {
   )
 }
 
+const testClaimWeddingGifts = async (context, wallet) => {
+  const { wng: unconnected, wmr, provider } = context
+  const wng = unconnected.connect(wallet)
+
+  const preWeddingBalance = await provider.getBalance(wng.address)
+  const preClaimerBalance = await provider.getBalance(wallet.address)
+
+  const giftEvent = waitForEvent(wmr, 'GiftClaimed', 5000)
+  const { wait, gasPrice } = await wng.claimWeddingGifts({ gasLimit })
+  const { gasUsed } = await wait()
+  const gasCost = gasUsed.mul(gasPrice)
+  const {
+    args: { wedding, claimer, value }
+  } = await giftEvent
+
+  const postWeddingBalance = await provider.getBalance(wng.address)
+  const postClaimerBalance = await provider.getBalance(wallet.address)
+
+  expect(preWeddingBalance).to.not.eq(
+    0,
+    'wedding contract balance should be more than 0 when claiming'
+  )
+  expect(postWeddingBalance).to.eq(
+    0,
+    'wedding contract balance should be 0 after claiming'
+  )
+  expect(postClaimerBalance.sub(preClaimerBalance)).to.eq(
+    preWeddingBalance.sub(gasCost),
+    'claimer balance should be incremented by wedding balance offset by gas costs'
+  )
+  expect(wedding).to.eq(
+    wng.address,
+    'wedding event param should match wedding address'
+  )
+  expect(claimer).to.eq(
+    wallet.address,
+    'claimer event param should match wallet address'
+  )
+  expect(value).to.eq(preWeddingBalance, 'value should match preWeddingBalance')
+}
+
 module.exports = {
   testStartWedding,
   testUpdateVows,
   testAcceptProposal,
   testUpdateWeddingPhoto,
   testSendWeddingGiftFallback,
-  testSendWeddingGift
+  testSendWeddingGift,
+  testClaimWeddingGifts
 }

@@ -9,7 +9,8 @@ const {
   testAcceptProposal,
   testUpdateWeddingPhoto,
   testSendWeddingGiftFallback,
-  testSendWeddingGift
+  testSendWeddingGift,
+  testClaimWeddingGifts
 } = require('../helpers/wng')
 const {
   utils: { parseEther }
@@ -48,7 +49,7 @@ describe('when creating a new wedding', () => {
   })
 })
 
-describe.only('when using core Wedding functionality on a happy path', () => {
+describe('when using core Wedding functionality on a happy path', () => {
   let context
   let partner1
   let partner2
@@ -127,6 +128,10 @@ describe.only('when using core Wedding functionality on a happy path', () => {
     const message = 'hey buuuuuuudy'
     await testSendWeddingGift(context, other, amount, message)
   })
+
+  it('should claimWeddingGifts', async () => {
+    await testClaimWeddingGifts(context, partner1)
+  })
 })
 
 describe('when using core Wedding functionality on a unhappy path', () => {
@@ -153,4 +158,6 @@ describe('when using core Wedding functionality on a unhappy path', () => {
   })
 
   it('should rejectProposal')
+
+  it('should divorce')
 })

@@ -46,4 +46,10 @@ interface IWeddingManager {
     string calldata _message
   )
     external;
+
+  function emitGiftClaimed(
+    address _gifter,
+    uint256 _value
+  )
+    external;
 }
