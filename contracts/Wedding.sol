@@ -195,6 +195,8 @@ contract Wedding {
     onlyFiance
   {
     uint256 _contractBalance = address(this).balance;
+    require(_contractBalance > 0);
+
     msg.sender.transfer(_contractBalance);
 
     weddingManager.emitGiftClaimed(msg.sender, _contractBalance);

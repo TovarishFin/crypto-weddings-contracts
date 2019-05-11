@@ -270,6 +270,13 @@ const testClaimWeddingGifts = async (context, wallet) => {
   expect(value).to.eq(preWeddingBalance, 'value should match preWeddingBalance')
 }
 
+const testRejectProposal = async (context, wallet) => {
+  const { wng: unconnected, wmr } = context
+  const wng = unconnected.connect(wallet)
+
+  await wng.rejectProposal()
+}
+
 module.exports = {
   testStartWedding,
   testUpdateVows,
@@ -277,5 +284,6 @@ module.exports = {
   testUpdateWeddingPhoto,
   testSendWeddingGiftFallback,
   testSendWeddingGift,
-  testClaimWeddingGifts
+  testClaimWeddingGifts,
+  testRejectProposal
 }

@@ -10,7 +10,8 @@ const {
   testUpdateWeddingPhoto,
   testSendWeddingGiftFallback,
   testSendWeddingGift,
-  testClaimWeddingGifts
+  testClaimWeddingGifts,
+  testRejectProposal
 } = require('../helpers/wng')
 const {
   utils: { parseEther }
@@ -42,7 +43,7 @@ describe('when creating a new wedding', () => {
     )
   })
 
-  it('should NOT startWedding with empty name2', async () => {
+  it('should NOT startWedding with empty name3', async () => {
     await assertRevert(
       testStartWedding(context, partner1, partner2, name1, '', 1)
     )
@@ -129,12 +130,20 @@ describe('when using core Wedding functionality on a happy path', () => {
     await testSendWeddingGift(context, other, amount, message)
   })
 
+  it('should NOT claimWeddingGifts as NOT fiance', async () => {
+    await assertRevert(testClaimWeddingGifts(context, other))
+  })
+
   it('should claimWeddingGifts', async () => {
     await testClaimWeddingGifts(context, partner1)
   })
+
+  it('should NOT claimWeddingGifts as fiance when NO balance', async () => {
+    await assertRevert(testClaimWeddingGifts(context, partner1))
+  })
 })
 
-describe('when using core Wedding functionality on a unhappy path', () => {
+describe.only('when using core Wedding functionality on a unhappy path', () => {
   let context
   let partner1
   let partner2
@@ -142,7 +151,7 @@ describe('when using core Wedding functionality on a unhappy path', () => {
   const name1 = 'bob'
   const name2 = 'alice'
 
-  before('setup context', async () => {
+  beforeEach('setup context', async () => {
     context = await setupContext()
     partner1 = context.partner1
     partner2 = context.partner2
@@ -157,7 +166,12 @@ describe('when using core Wedding functionality on a unhappy path', () => {
     )
   })
 
-  it('should rejectProposal')
+  it('should rejectProposal as partner1', async () => {
+    await testRejectProposal(context, partner1)
+  })
 
-  it('should divorce')
+  it('should divorce', async () => {
+    await testAcceptProposal(context, partner1)
+    await testAcceptProposal(context, partner2)
+  })
 })
