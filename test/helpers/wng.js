@@ -271,10 +271,97 @@ const testClaimWeddingGifts = async (context, wallet) => {
 }
 
 const testRejectProposal = async (context, wallet) => {
-  const { wng: unconnected, wmr } = context
+  const { wng: unconnected, wmr, provider } = context
   const wng = unconnected.connect(wallet)
 
-  await wng.rejectProposal()
+  const preWeddingBalance = await provider.getBalance(wng.address)
+  const preRejectorBalance = await provider.getBalance(wallet.address)
+
+  const cancelEvent = waitForEvent(wmr, 'WeddingCancelled', 5000)
+  const { wait, gasPrice } = await wng.rejectProposal({ gasLimit })
+  const { gasUsed } = await wait()
+  const gasCost = gasUsed.mul(gasPrice)
+  const {
+    args: { wedding, cancellor }
+  } = await cancelEvent
+
+  const postRejectorBalance = await provider.getBalance(wallet.address)
+  const postCode = await provider.getCode(wng.address)
+
+  expect(postCode).to.eq('0x', 'postCode should be 0x after selfdestruct')
+  expect(wedding).to.eq(wng.address, 'wedding should match correct address')
+  expect(cancellor).to.eq(
+    wallet.address,
+    'cancellor should match wallet.address'
+  )
+
+  if (preWeddingBalance.gt(gasCost)) {
+    expect(postRejectorBalance.gt(preRejectorBalance))
+  }
+}
+
+const testDivorce = async (context, wallet) => {
+  const { wng: unconnected, wmr, provider } = context
+  const wng = unconnected.connect(wallet)
+  const { isPartner1, isPartner2 } = await checkIsPartner(context, wallet)
+
+  const partner1 = await wng.partner1()
+  const partner2 = await wng.partner2()
+  const preP1Answer = await wng.p1Answer()
+  const preP2Answer = await wng.p2Answer()
+  const preWeddingBalance = await provider.getBalance(wng.address)
+  const preDivorcerBalance = await provider.getBalance(wallet.address)
+
+  const divorcesEvent = waitForEvent(wmr, 'PartnerDivorces')
+  const divorceEvent = waitForEvent(wmr, 'Divorced')
+  const { wait, gasPrice } = await wng.divorce({ gasLimit })
+  const { gasUsed } = await wait()
+  const gasCost = gasUsed.mul(gasPrice)
+
+  const postDivorcerBalance = await provider.getBalance(wallet.address)
+  const postCode = await provider.getCode(wng.address)
+
+  if ((isPartner1 && !preP2Answer) || (isPartner2 && !preP1Answer)) {
+    const {
+      args: { wedding, partner1: eventPartner1, partner2: eventPartner2 }
+    } = await divorceEvent
+    expect(postCode).to.eq('0x', 'postCode should be 0x after selfdestruct')
+    expect(wedding).to.eq(wng.address, 'wedding should match correct address')
+    expect(eventPartner1).to.eq(partner1, 'eventPartner1 should match partner1')
+    expect(eventPartner2).to.eq(partner2, 'eventPartner2 should match partner2')
+
+    if (preWeddingBalance.gt(gasCost)) {
+      expect(postDivorcerBalance.gt(preDivorcerBalance))
+    }
+  } else if (isPartner1) {
+    const postP1Answer = await wng.p1Answer()
+    const postP2Answer = await wng.p2Answer()
+    const {
+      args: { wedding, partner }
+    } = await divorcesEvent
+    expect(postP1Answer).to.eq(
+      false,
+      'postP1Answer should be false after calling divorce'
+    )
+    expect(postP2Answer).to.eq(true, 'postP2Answer should be true')
+    expect(wedding).to.eq(wng.address, 'wedding should match correct address')
+    expect(partner).to.eq(partner1, 'event partner should match partner1')
+  } else if (isPartner2) {
+    const postP1Answer = await wng.p1Answer()
+    const postP2Answer = await wng.p2Answer()
+    const {
+      args: { wedding, partner }
+    } = await divorcesEvent
+    expect(postP2Answer).to.eq(
+      false,
+      'postP2Answer should be false after calling divorce'
+    )
+    expect(postP1Answer).to.eq(true, 'postP1Answer should be true')
+    expect(wedding).to.eq(wng.address, 'wedding should match correct address')
+    expect(partner).to.eq(partner2, 'event partner should match partner2')
+  } else {
+    expect.fail('only partner1 or partner2 should be able to divorce.')
+  }
 }
 
 module.exports = {
@@ -285,5 +372,6 @@ module.exports = {
   testSendWeddingGiftFallback,
   testSendWeddingGift,
   testClaimWeddingGifts,
-  testRejectProposal
+  testRejectProposal,
+  testDivorce
 }

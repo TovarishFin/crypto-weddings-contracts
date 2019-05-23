@@ -11,7 +11,8 @@ const {
   testSendWeddingGiftFallback,
   testSendWeddingGift,
   testClaimWeddingGifts,
-  testRejectProposal
+  testRejectProposal,
+  testDivorce
 } = require('../helpers/wng')
 const {
   utils: { parseEther }
@@ -143,7 +144,7 @@ describe('when using core Wedding functionality on a happy path', () => {
   })
 })
 
-describe.only('when using core Wedding functionality on a unhappy path', () => {
+describe('when using core Wedding functionality on an unhappy path', () => {
   let context
   let partner1
   let partner2
@@ -170,8 +171,70 @@ describe.only('when using core Wedding functionality on a unhappy path', () => {
     await testRejectProposal(context, partner1)
   })
 
-  it('should divorce', async () => {
+  it('should rejectProposal as partner2', async () => {
+    await testRejectProposal(context, partner2)
+  })
+
+  it('should rejectProposal with non-zero wedding balance as partner1', async () => {
+    const amount = parseEther('0.1')
+    await testSendWeddingGiftFallback(context, other, amount)
+    await testRejectProposal(context, partner1)
+  })
+
+  it('should rejectProposal with non-zero wedding balance as partner2', async () => {
+    const amount = parseEther('0.1')
+    await testSendWeddingGiftFallback(context, other, amount)
+    await testRejectProposal(context, partner2)
+  })
+
+  it('should NOT rejectProposal as other', async () => {
+    await assertRevert(testRejectProposal(context, other))
+  })
+
+  it('should divorce as partner1', async () => {
     await testAcceptProposal(context, partner1)
     await testAcceptProposal(context, partner2)
+    await testDivorce(context, partner2)
+    await testDivorce(context, partner1)
+  })
+
+  it('should divorce as partner2', async () => {
+    await testAcceptProposal(context, partner1)
+    await testAcceptProposal(context, partner2)
+    await testDivorce(context, partner1)
+    await testDivorce(context, partner2)
+  })
+
+  it('should divorce as partner1 with non-zero wedding balance', async () => {
+    const amount = parseEther('0.1')
+    await testSendWeddingGiftFallback(context, other, amount)
+    await testAcceptProposal(context, partner1)
+    await testAcceptProposal(context, partner2)
+    await testDivorce(context, partner2)
+    await testDivorce(context, partner1)
+  })
+
+  it('should divorce as partner2 with non-zero wedding balance', async () => {
+    const amount = parseEther('0.1')
+    await testSendWeddingGiftFallback(context, other, amount)
+    await testAcceptProposal(context, partner2)
+    await testAcceptProposal(context, partner1)
+    await testDivorce(context, partner1)
+    await testDivorce(context, partner2)
+  })
+
+  it('should NOT start divorce as other', async () => {
+    await testAcceptProposal(context, partner2)
+    await testAcceptProposal(context, partner1)
+    await testDivorce(context, partner1)
+    await assertRevert(testDivorce(context, other))
+  })
+
+  it('should NOT divorce as other', async () => {
+    await testAcceptProposal(context, partner2)
+    await testAcceptProposal(context, partner1)
+    await testDivorce(context, partner1)
+    await assertRevert(testDivorce(context, other))
+    await testDivorce(context, partner2)
   })
 })

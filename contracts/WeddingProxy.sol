@@ -52,12 +52,6 @@ contract WeddingProxy {
     bytes32 _weddingMasterSlot = weddingMasterSlot;
     assembly {
 
-      // TODO: test with and without this... we might be able to get away with normal implementation rather than doing nothing like we are here...
-      if lt(gas, 2301) {
-        return (1, 1)
-      }
-
-
       let _masterContract := sload(_weddingMasterSlot)
 
       calldatacopy(

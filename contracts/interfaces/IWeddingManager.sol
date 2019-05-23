@@ -8,6 +8,12 @@ interface IWeddingManager {
   )
     external;
 
+  function removeCancelledWedding(
+    address _partner1,
+    address _partner2
+  )
+    external;
+
   function emitPartnerAccepts(
     address _partner
   )

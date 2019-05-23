@@ -137,7 +137,7 @@ contract WeddingManager is Upgradeable {
     initOneTimeOnly
   {
     require(
-      isContract(_weddingMaster), 
+      isContract(_weddingMaster),
       "weddingMaster must be a contract"
     );
 
@@ -151,11 +151,11 @@ contract WeddingManager is Upgradeable {
     onlyOwner
   {
     require(
-      isContract(_weddingMaster), 
+      isContract(_weddingMaster),
       "weddingMaster must be a contract"
     );
     require(
-      weddingMaster != _weddingMaster, 
+      weddingMaster != _weddingMaster,
       "_weddingMaster must be different that weddingMaster"
     );
 
@@ -189,6 +189,19 @@ contract WeddingManager is Upgradeable {
     external
     onlyWedding
   {
+    removeWedding(msg.sender, _partner1, _partner2);
+
+    emit Divorced(msg.sender, _partner1, _partner2);
+  }
+
+  function removeCancelledWedding(
+    address _partner1,
+    address _partner2
+  )
+    external
+    onlyWedding
+  {
+      
     removeWedding(msg.sender, _partner1, _partner2);
   }
 
@@ -305,7 +318,7 @@ contract WeddingManager is Upgradeable {
       _message
     );
   }
-  
+
   function emitGiftClaimed(
     address _claimer,
     uint256 _value
@@ -319,8 +332,8 @@ contract WeddingManager is Upgradeable {
       _value
     );
   }
+
   //
   // end centralized event emitters
   //
 }
- 

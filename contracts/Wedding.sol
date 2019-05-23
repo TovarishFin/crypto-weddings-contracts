@@ -149,6 +149,7 @@ contract Wedding {
     atEitherStage(Stage.Initialized, Stage.InProgress)
   {
     weddingManager.emitWeddingCancelled(msg.sender);
+    weddingManager.removeCancelledWedding(partner1, partner2);
 
     selfdestruct(msg.sender);
   }
@@ -174,8 +175,6 @@ contract Wedding {
     onlyFiance
     atStage(Stage.Married)
   {
-    require(address(this).balance == 0);
-
     msg.sender == partner1
       ? p1Answer = false
       : p2Answer = false;
@@ -184,7 +183,6 @@ contract Wedding {
 
     if (!p1Answer && !p2Answer) {
       weddingManager.divorce(partner1, partner2);
-      weddingManager.emitDivorced(partner1, partner2);
 
       selfdestruct(msg.sender);
     }

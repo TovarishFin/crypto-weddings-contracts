@@ -1,7 +1,7 @@
 {
-  "name": "cryptoweddings-contracts",
-  "version": "0.0.1",
-  "description": "smart contracts for blockchain marriage dapp",
+  "name": "crypto-weddings-contracts",
+  "version": "0.1.0",
+  "description": "smart contracts for blockchain weddings",
   "scripts": {
     "build": "waffle",
     "clean:build": "rimraf build && waffle",
