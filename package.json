@@ -1,6 +1,6 @@
 {
   "name": "crypto-weddings-contracts",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "smart contracts for blockchain weddings",
   "scripts": {
     "build": "waffle",
@@ -16,6 +16,9 @@
   "author": "Cody Lamson",
   "license": "MIT",
   "dependencies": {
+    "openzeppelin-solidity": "^2.2.0"
+  },
+  "devDependencies": {
     "babel-eslint": "^10.0.1",
     "chai": "^4.2.0",
     "chalk": "^2.4.2",
@@ -33,7 +36,6 @@
     "ethers": "^4.0.27",
     "ganache-cli": "^6.4.3",
     "nodemon": "^1.18.11",
-    "openzeppelin-solidity": "^2.2.0",
     "prettier": "^1.17.0",
     "rimraf": "^2.6.3",
     "solium": "^1.2.4"
