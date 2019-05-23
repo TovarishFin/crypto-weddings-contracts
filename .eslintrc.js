@@ -60,6 +60,7 @@ module.exports = {
     xit: true
   },
   rules: {
+    'security/detect-non-literal-fs-filename': 'off',
     'import/first': 'error',
     'import/no-anonymous-default-export': 'error',
     'import/no-unassigned-import': 'error',
