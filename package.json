@@ -1,7 +1,17 @@
 {
   "name": "crypto-weddings-contracts",
-  "version": "0.1.1",
+  "author": "Cody Lamson",
+  "license": "MIT",
+  "version": "0.1.2",
   "description": "smart contracts for blockchain weddings",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:TovarishFin/crypto-weddings-contracts.git"
+  },
+  "files": [
+    "build",
+    "contracts"
+  ],
   "scripts": {
     "build": "waffle",
     "clean:build": "rimraf build && waffle",
@@ -13,8 +23,6 @@
     "test": "waffle && node test/runTests.js",
     "test:watch": "nodemon -w test -w contracts -e js,json,sol -x yarn test"
   },
-  "author": "Cody Lamson",
-  "license": "MIT",
   "dependencies": {
     "openzeppelin-solidity": "^2.2.0"
   },
