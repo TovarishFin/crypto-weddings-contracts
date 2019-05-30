@@ -25,7 +25,7 @@
     "deploy:mainnet": "NETWORK=mainnet node ./scripts/deploy.js",
     "lint:sol": "solium -d ./contracts",
     "lint:js": "eslint ./test",
-    "start:blockchain": "yarn ganache-cli -b 15 -d -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'",
+    "start:blockchain": "yarn ganache-cli -a 20 -b 5 -d -m 'candy maple cake sugar pudding cream honey rich smooth crumble sweet treat'",
     "test": "waffle && node test/runTests.js",
     "test:watch": "nodemon -w test -w contracts -e js,json,sol -x yarn test"
   },

@@ -1,9 +1,10 @@
 pragma solidity ^0.5.7;
 
 import "./interfaces/IWeddingManager.sol";
+import "./interfaces/IWedding.sol";
 
 
-contract Wedding {
+contract Wedding is IWedding {
   IWeddingManager public weddingManager;
   address public partner1;
   address public partner2;
@@ -18,14 +19,6 @@ contract Wedding {
   uint256 public dateMarried;
   WeddingType public weddingType;
   Stage public stage;
-
-  enum WeddingType {
-    Traditional,
-    ManAndMan,
-    WomanAndWoman,
-    ManAndOther,
-    WomanAndOther
-  }
 
   enum Stage {
     Uninitialized,
@@ -117,6 +110,8 @@ contract Wedding {
     msg.sender == partner1
       ? p1Vows = _vows
       : p2Vows = _vows;
+
+    weddingManager.emitVowsUpdated(msg.sender, _vows);
   }
 
   function acceptProposal()

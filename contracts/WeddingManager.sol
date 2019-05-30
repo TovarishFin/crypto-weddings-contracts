@@ -33,6 +33,12 @@ contract WeddingManager is Upgradeable {
     address indexed partner2
   );
 
+  event VowsUpdated(
+    address indexed wedding,
+    address indexed partner,
+    string vows
+  );
+
   event PartnerAccepts(
     address indexed wedding,
     address indexed partner
@@ -114,6 +120,7 @@ contract WeddingManager is Upgradeable {
     require(weddingOf[_partner2] == _wedding);
 
     uint256 _index = weddingIndex[_wedding];
+    weddingIndex[weddings[weddings.length - 1]] = _index;
     weddings[_index] = weddings[weddings.length - 1];
     weddings.length--;
 
@@ -246,6 +253,16 @@ contract WeddingManager is Upgradeable {
   //
   // start centralized event emitters
   //
+
+  function emitVowsUpdated(
+    address _partner,
+    string calldata _vows
+  )
+    external
+    onlyWedding
+  {
+    emit VowsUpdated(msg.sender, _partner, _vows);
+  }
 
   function emitPartnerAccepts(
     address _partner

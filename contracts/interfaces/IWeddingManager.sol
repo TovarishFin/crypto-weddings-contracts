@@ -14,6 +14,12 @@ interface IWeddingManager {
   )
     external;
 
+  function emitVowsUpdated(
+    address _partner,
+    string calldata _vows
+  )
+    external;
+
   function emitPartnerAccepts(
     address _partner
   )

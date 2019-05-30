@@ -106,9 +106,9 @@ const deploy = async () => {
   deployments = {
     ...deployments,
     [network]: {
-      wngMaster: wngMaster.address,
-      wmrMaster: wmrMaster.address,
-      wmrProxy: wmrProxy.address
+      weddingMaster: wngMaster.address,
+      weddingManagerMaster: wmrMaster.address,
+      weddingManager: wmrProxy.address
     }
   }
 
