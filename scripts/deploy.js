@@ -29,7 +29,7 @@ const readCreateDeployments = () => {
   } catch (err) {
     if (err.message.includes('no such file')) {
       deployments = {}
-      fs.writeFileSync(writeLocation, JSON.stringify(deployments))
+      fs.writeFileSync(writeLocation, JSON.stringify(deployments, null, 4))
     } else {
       throw new Error('something strange happened with file read...')
     }
@@ -59,6 +59,11 @@ const deploy = async () => {
   const wallet = new ethers.Wallet.fromMnemonic(mnemonic).connect(provider)
 
   console.log(chalk.cyan('deployment environment setup complete'))
+  console.log(chalk.yellow('getting blockNumber deployment start...'))
+
+  const deploymentBlock = await provider.getBlockNumber()
+
+  console.log(chalk.cyan(`got current block: ${deploymentBlock}`))
 
   console.log(chalk.yellow('setting up weddingMaster...'))
 
@@ -106,13 +111,14 @@ const deploy = async () => {
   deployments = {
     ...deployments,
     [network]: {
+      deploymentBlock,
       weddingMaster: wngMaster.address,
       weddingManagerMaster: wmrMaster.address,
       weddingManager: wmrProxy.address
     }
   }
 
-  fs.writeFileSync(writeLocation, JSON.stringify(deployments))
+  fs.writeFileSync(writeLocation, JSON.stringify(deployments, null, 4))
 
   console.log(chalk.cyan('contract addresses written to file'))
   console.log(chalk.magenta('all done!'))
