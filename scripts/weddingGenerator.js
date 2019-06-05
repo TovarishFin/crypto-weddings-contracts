@@ -324,7 +324,7 @@ const divorceRejectWedding = async (pathLevel = 0) => {
     console.log(chalk.yellow('wedding is in non-married state...'))
     const tx = await wedding.rejectProposal({ gasLimit })
     await tx.wait()
-    console.log(chalk.cyan('propoal rejected... wedding nuked'))
+    console.log(chalk.cyan('proposal rejected... wedding nuked'))
   } else {
     console.log(chalk.yellow('wedding is in married state...'))
 
