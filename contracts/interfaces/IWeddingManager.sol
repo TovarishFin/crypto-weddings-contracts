@@ -14,6 +14,9 @@ interface IWeddingManager {
   )
     external;
 
+  function deRegisterWedding()
+    external;
+
   function emitVowsUpdated(
     address _partner,
     string calldata _vows
@@ -62,6 +65,17 @@ interface IWeddingManager {
   function emitGiftClaimed(
     address _gifter,
     uint256 _value
+  )
+    external;
+
+  function emitUserPermissionUpdated(
+    address _user,
+    bool _banned
+  )
+    external;
+
+  function emitMinGiftAmountUpdated(
+    uint256 _newGiftAmount
   )
     external;
 }

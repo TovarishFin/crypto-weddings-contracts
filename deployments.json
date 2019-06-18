@@ -11,8 +11,9 @@
         "weddingManager": "0xa39b73520f68eE7A8212966215Bd0d35815ee82b"
     },
     "rinkeby": {
-        "weddingMaster": "0x390a6f569AeE358dAa847A7647040E1B087bc31b",
-        "weddingManagerMaster": "0xe07dBE2Bc74F01F928d116282D1C1A3E2af7eBD2",
-        "weddingManager": "0x0502739b4f8bD8d35C81e0b5f5199882bfb02181"
+        "deploymentBlock": 4525827,
+        "weddingMaster": "0xba379c912Ea5C6e153237a065139A95E70E07cC8",
+        "weddingManagerMaster": "0x6e416A0469f56689424472308d418363385A7744",
+        "weddingManager": "0xBe29919dc6E226E5240357E2BafBE74FF22F8A99"
     }
 }

@@ -1,11 +1,17 @@
 pragma solidity ^0.5.4;
 
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 
 
 contract Upgradeable is Ownable {
   address public masterContract;
   bool public initialized;
+  bool public paused;
+
+  event Paused(address account);
+
+  event Unpaused(address account);
 
   event MasterContractUpgraded(
     address upgradedFrom,
@@ -21,6 +27,18 @@ contract Upgradeable is Ownable {
     initialized = true;
   }
 
+  modifier whenNotPaused() {
+    require(!paused);
+
+    _;
+  }
+
+  modifier whenPaused() {
+    require(paused);
+
+    _;
+  }
+
   function isContract(
     address _address
   )
@@ -32,6 +50,24 @@ contract Upgradeable is Ownable {
     assembly { _codeSize := extcodesize(_address) }
 
     return _codeSize > 0;
+  }
+
+  function pause()
+    public
+    onlyOwner
+    whenNotPaused
+  {
+    paused = true;
+    emit Paused(msg.sender);
+  }
+
+  function unpause()
+    public
+    onlyOwner
+    whenPaused
+  {
+    paused = false;
+    emit Unpaused(msg.sender);
   }
 
   function upgradeMaster(

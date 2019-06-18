@@ -1,6 +1,5 @@
 pragma solidity ^0.5.7;
 
-import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "./WeddingProxy.sol";
 import "./Upgradeable.sol";
 
@@ -17,6 +16,12 @@ contract WeddingManager is Upgradeable {
 
   modifier onlyWedding() {
     require(weddingExists[msg.sender]);
+
+    _;
+  }
+
+  modifier onlyWeddingOrOwner() {
+    require(weddingExists[msg.sender] || msg.sender == owner());
 
     _;
   }
@@ -82,6 +87,15 @@ contract WeddingManager is Upgradeable {
     address indexed wedding,
     address indexed claimer,
     uint256 value
+  );
+
+  event UserPermissionUpdated(
+    address user,
+    bool banned
+  );
+
+  event MinGiftAmountUpdated(
+    uint256 newGiftAmount
   );
 
   function addWedding(
@@ -176,6 +190,7 @@ contract WeddingManager is Upgradeable {
     IWedding.WeddingType _weddingType
   )
     external
+    whenNotPaused
   {
     WeddingProxy _newWedding = new WeddingProxy(weddingMaster);
     address _newWeddingAddress = address(_newWedding);
@@ -208,7 +223,6 @@ contract WeddingManager is Upgradeable {
     external
     onlyWedding
   {
-      
     removeWedding(msg.sender, _partner1, _partner2);
   }
 
@@ -218,7 +232,7 @@ contract WeddingManager is Upgradeable {
     address _partner2
   )
     external
-    onlyOwner
+    onlyWeddingOrOwner
   {
     removeWedding(_wedding, _partner1, _partner2);
   }
@@ -348,6 +362,25 @@ contract WeddingManager is Upgradeable {
       _claimer,
       _value
     );
+  }
+
+  function emitUserPermissionUpdated(
+    address _user,
+    bool _banned
+  )
+    external
+    onlyWedding
+  {
+    emit UserPermissionUpdated(_user, _banned);
+  }
+
+  function emitMinGiftAmountUpdated(
+    uint256 _newGiftAmount
+  )
+    external
+    onlyWedding
+  {
+    emit MinGiftAmountUpdated(_newGiftAmount);
   }
 
   //

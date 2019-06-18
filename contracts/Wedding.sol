@@ -17,6 +17,8 @@ contract Wedding is IWedding {
   bool public p2Answer;
   bool public married;
   uint256 public dateMarried;
+  uint256 public minGiftAmount;
+  mapping(address => bool) banned;
   WeddingType public weddingType;
   Stage public stage;
 
@@ -91,12 +93,12 @@ contract Wedding is IWedding {
     require(bytes(_name2).length > 0);
 
     weddingManager = IWeddingManager(msg.sender);
+    minGiftAmount = 1e16;
     partner1 = _p1Address;
     p1Name = _name1;
     partner2 = _p2Address;
     p2Name = _name2;
     weddingType = _weddingType;
-
     stage = Stage.Initialized;
   }
 
@@ -157,7 +159,7 @@ contract Wedding is IWedding {
     atStage(Stage.Married)
   {
     require(
-      keccak256(bytes(_uri)) != 
+      keccak256(bytes(_uri)) !=
       keccak256(bytes(weddingPhoto))
     );
     weddingPhoto = _uri;
@@ -202,6 +204,36 @@ contract Wedding is IWedding {
     payable
   {
     weddingManager.emitGiftReceived(msg.sender, msg.value, _message);
+  }
+
+  function deRegisterWedding()
+    external
+    onlyFiance
+  {
+    weddingManager.deRegisterWedding();
+  }
+
+  function updateUserPermissions(
+    address _user,
+    bool _banned
+  )
+    external
+    onlyFiance
+  {
+    banned[_user] = _banned;
+
+    weddingManager.emitUserPermissionUpdated(_user, _banned);
+  }
+
+  function updateMinGiftAmount(
+    uint256 _minGiftAmount
+  )
+    external
+    onlyFiance
+  {
+    minGiftAmount = _minGiftAmount;
+
+    weddingManager.emitMinGiftAmountUpdated(_minGiftAmount);
   }
 
   function()

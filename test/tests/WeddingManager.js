@@ -124,7 +124,7 @@ describe('when using weddingManager owner functionality', async () => {
     context = await setupContext()
     owner = context.owner
     other = context.other
-    weddingStub = other
+    weddingStub = context.weddingStub
     partner1 = context.partner1
     partner2 = context.partner2
   })

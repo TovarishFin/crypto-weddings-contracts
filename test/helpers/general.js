@@ -69,7 +69,7 @@ const getAllSimpleStorage = async (context, addr) => {
 const setupContext = async noInit => {
   const provider = createMockProvider()
   const wallets = getWallets(provider)
-  const [owner, partner1, partner2, other] = wallets
+  const [owner, partner1, partner2, weddingStub, other] = wallets
 
   const wngMaster = await deployContract(owner, Wedding)
   const wmrMaster = await deployContract(owner, WeddingManager)
@@ -91,6 +91,7 @@ const setupContext = async noInit => {
     partner1,
     partner2,
     other,
+    weddingStub,
     wngMaster,
     wmrMaster,
     wmrMasterStub,
