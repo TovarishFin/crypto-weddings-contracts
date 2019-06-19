@@ -90,11 +90,13 @@ contract WeddingManager is Upgradeable {
   );
 
   event UserPermissionUpdated(
+    address indexed wedding,
     address user,
     bool banned
   );
 
   event MinGiftAmountUpdated(
+    address indexed wedding,
     uint256 newGiftAmount
   );
 
@@ -369,7 +371,7 @@ contract WeddingManager is Upgradeable {
     external
     onlyWedding
   {
-    emit UserPermissionUpdated(_user, _banned);
+    emit UserPermissionUpdated(msg.sender, _user, _banned);
   }
 
   function emitMinGiftAmountUpdated(
@@ -378,7 +380,7 @@ contract WeddingManager is Upgradeable {
     external
     onlyWedding
   {
-    emit MinGiftAmountUpdated(_newGiftAmount);
+    emit MinGiftAmountUpdated(msg.sender, _newGiftAmount);
   }
 
   //
