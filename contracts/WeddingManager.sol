@@ -186,8 +186,7 @@ contract WeddingManager is Upgradeable {
   function startWedding(
     string calldata _name1,
     address _partner2,
-    string calldata _name2,
-    IWedding.WeddingType _weddingType
+    string calldata _name2
   )
     external
     whenNotPaused
@@ -199,8 +198,7 @@ contract WeddingManager is Upgradeable {
       msg.sender,
       _name1,
       _partner2,
-      _name2,
-      _weddingType
+      _name2
     );
   }
 

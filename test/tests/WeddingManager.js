@@ -7,7 +7,9 @@ const {
   testAddWeddingStub,
   testDivorce,
   testRegisterWedding,
-  testDeRegisterWedding
+  testDeRegisterWedding,
+  testPauseWeddingManager,
+  testUnpauseWeddingManager
 } = require('../helpers/wmr')
 const {
   utils: { parseEther }
@@ -48,6 +50,30 @@ describe('when setting base settings for weddngManager', () => {
   it('should updateWeddingMaster as owner', async () => {
     const { wngMaster } = context
     await testUpdateWeddingMaster(context, owner, wngMaster)
+  })
+
+  it('should NOT pause weddingManager as NOT owner', async () => {
+    await assertRevert(testPauseWeddingManager(context, other))
+  })
+
+  it('should pause weddingManager as owner', async () => {
+    await testPauseWeddingManager(context, owner)
+  })
+
+  it('should NOT pause weddingManager as owner again', async () => {
+    await assertRevert(testPauseWeddingManager(context, owner))
+  })
+
+  it('should NOT unpause weddingManager as NOT owner', async () => {
+    await assertRevert(testUnpauseWeddingManager(context, other))
+  })
+
+  it('should unpause weddingManager as owner', async () => {
+    await testUnpauseWeddingManager(context, owner)
+  })
+
+  it('should NOT unpause weddingManager as owner again', async () => {
+    await assertRevert(testUnpauseWeddingManager(context, owner))
   })
 })
 
@@ -92,16 +118,24 @@ describe('when using weddingManager core functionality', async () => {
     await testUpgradeMaster(context, owner, context.wmrMasterStub, true)
   })
 
-  it('should startWedding', async () => {
-    await testStartWedding(context, partner1, partner2, 'bob', 'alice', 1)
+  it('should NOT startWedding when paused', async () => {
+    await testPauseWeddingManager(context, owner)
+    await assertRevert(
+      testStartWedding(context, partner1, partner2, 'bob', 'alice')
+    )
+    await testUnpauseWeddingManager(context, owner)
+  })
+
+  it('should startWedding when NOT paused', async () => {
+    await testStartWedding(context, partner1, partner2, 'bob', 'alice')
   })
 
   it('should NOT startWedding for someone already married', async () => {
     await assertRevert(
-      testStartWedding(context, partner1, partner3, 'bob', 'pat', 1)
+      testStartWedding(context, partner1, partner3, 'bob', 'pat')
     )
     await assertRevert(
-      testStartWedding(context, partner3, partner2, 'pat', 'alice', 1)
+      testStartWedding(context, partner3, partner2, 'pat', 'alice')
     )
   })
 
@@ -112,6 +146,29 @@ describe('when using weddingManager core functionality', async () => {
 
   it('should NOT divorce again', async () => {
     await assertRevert(testDivorce(context, weddingStub, partner3, partner4))
+  })
+
+  it('should deRegisterWedding as wedding', async () => {
+    await testAddWeddingStub(context, weddingStub, partner3, partner4)
+    await testDeRegisterWedding(
+      context,
+      weddingStub,
+      weddingStub,
+      partner3,
+      partner4
+    )
+  })
+
+  it('should NOT deRegisterWedding as wedding again', async () => {
+    await assertRevert(
+      testDeRegisterWedding(
+        context,
+        weddingStub,
+        weddingStub,
+        partner3,
+        partner4
+      )
+    )
   })
 })
 
@@ -135,7 +192,7 @@ describe('when using weddingManager owner functionality', async () => {
     )
   })
 
-  it('should registerWedding', async () => {
+  it('should registerWedding as owner', async () => {
     await testRegisterWedding(context, owner, weddingStub, partner1, partner2)
   })
 

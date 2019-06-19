@@ -112,7 +112,6 @@ const createWedding = async (creatorPath = 0, acceptorPath = 1) => {
   const womanName = getRandomWomanName()
   const creator = getWallet(creatorPath)
   const acceptor = getWallet(acceptorPath)
-  const weddingType = 1
 
   const wmr = getWeddingManager(creator)
   let weddingAddress
@@ -138,13 +137,9 @@ const createWedding = async (creatorPath = 0, acceptorPath = 1) => {
   })
 
   try {
-    const tx = await wmr.startWedding(
-      manName,
-      acceptor.address,
-      womanName,
-      weddingType,
-      { gasLimit }
-    )
+    const tx = await wmr.startWedding(manName, acceptor.address, womanName, {
+      gasLimit
+    })
     await tx.wait()
 
     weddingAddress = await weddingAdded

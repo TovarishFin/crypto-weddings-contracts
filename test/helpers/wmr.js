@@ -43,14 +43,7 @@ const testUpdateWeddingMaster = async (context, wallet, weddingMaster) => {
   )
 }
 
-const testStartWedding = async (
-  context,
-  partner1,
-  partner2,
-  name1,
-  name2,
-  weddingType
-) => {
+const testStartWedding = async (context, partner1, partner2, name1, name2) => {
   const { address: p1Address } = partner1
   const { address: p2Address } = partner2
   const { wmr: unconnected } = context
@@ -60,7 +53,7 @@ const testStartWedding = async (
   const preWeddingOfP1 = await wmr.weddingOf(p1Address)
   const preWeddingOfP2 = await wmr.weddingOf(p2Address)
 
-  const tx = wmr.startWedding(name1, p2Address, name2, weddingType, {
+  const tx = wmr.startWedding(name1, p2Address, name2, {
     gasLimit
   })
 
@@ -325,6 +318,32 @@ const testDeRegisterWedding = async (
   )
 }
 
+const testPauseWeddingManager = async (context, wallet) => {
+  const { wmr: unconnected } = context
+  const wmr = unconnected.connect(wallet)
+  const prePaused = await wmr.paused()
+
+  await wmr.pause()
+
+  const postPaused = await wmr.paused()
+
+  expect(prePaused).to.eq(false, 'paused should be false before pausing')
+  expect(postPaused).to.eq(true, 'paused should be true after pausing')
+}
+
+const testUnpauseWeddingManager = async (context, wallet) => {
+  const { wmr: unconnected } = context
+  const wmr = unconnected.connect(wallet)
+  const prePaused = await wmr.paused()
+
+  await wmr.unpause()
+
+  const postPaused = await wmr.paused()
+
+  expect(prePaused).to.eq(true, 'paused should be true before unpausing')
+  expect(postPaused).to.eq(false, 'paused should be false after unppausing')
+}
+
 module.exports = {
   testInitialize,
   testUpdateWeddingMaster,
@@ -333,5 +352,7 @@ module.exports = {
   testAddWeddingStub,
   testDivorce,
   testRegisterWedding,
-  testDeRegisterWedding
+  testDeRegisterWedding,
+  testPauseWeddingManager,
+  testUnpauseWeddingManager
 }

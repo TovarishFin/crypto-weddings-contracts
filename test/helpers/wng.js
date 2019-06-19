@@ -1,17 +1,13 @@
 const Wedding = require('../../build/Wedding')
 const { gasLimit, waitForEvent } = require('../helpers/general')
 const { testStartWedding: testNewWedding } = require('../helpers/wmr')
-const { Contract } = require('ethers')
+const {
+  Contract,
+  utils: { parseEther }
+} = require('ethers')
 const chalk = require('chalk')
 
-const testStartWedding = async (
-  context,
-  partner1,
-  partner2,
-  name1,
-  name2,
-  weddingType
-) => {
+const testStartWedding = async (context, partner1, partner2, name1, name2) => {
   const { address: p1Address } = partner1
   const { address: p2Address } = partner2
   const weddingAddress = await testNewWedding(
@@ -19,8 +15,7 @@ const testStartWedding = async (
     partner1,
     partner2,
     name1,
-    name2,
-    weddingType
+    name2
   )
   const wng = new Contract(weddingAddress, Wedding.abi, partner1)
 
@@ -28,18 +23,18 @@ const testStartWedding = async (
   const postP1Name = await wng.p1Name()
   const postPartner2 = await wng.partner2()
   const postP2Name = await wng.p2Name()
-  const postWeddingType = await wng.weddingType()
   const postStage = await wng.stage()
+  const postMinGiftAmount = await wng.minGiftAmount()
 
   expect(postPartner1).to.eq(p1Address, 'postPartner1 should match p1Address')
   expect(postP1Name).to.eq(name1, 'postP1Name should match name1')
   expect(postPartner2).to.eq(p2Address, 'postPartner2 should match p2Address')
   expect(postP2Name).to.eq(name2, 'postP2Name should match named2')
-  expect(postWeddingType).to.eq(
-    weddingType,
-    'postWeddingType should match weddingType'
-  )
   expect(postStage).to.eq(1, 'postStage should be 1, Initialized')
+  expect(postMinGiftAmount).to.eq(
+    parseEther('0.01'),
+    'minGiftAmount should start at 1e16'
+  )
 
   return {
     ...context,
@@ -364,6 +359,46 @@ const testDivorce = async (context, wallet) => {
   }
 }
 
+const testBanUser = async (context, wallet, user) => {
+  const { wng: unconnected } = context
+  const wng = unconnected.connect(wallet)
+  const preBanned = await wng.banned(user.address)
+
+  await wng.updateUserPermissions(user.address, true)
+
+  const postBanned = await wng.banned(user.address)
+
+  expect(preBanned).to.eq(false, 'user should NOT be banned before banning')
+  expect(postBanned).to.eq(true, 'user should be banned after banning')
+}
+
+const testUnBanUser = async (context, wallet, user) => {
+  const { wng: unconnected } = context
+  const wng = unconnected.connect(wallet)
+  const preBanned = await wng.banned(user.address)
+
+  await wng.updateUserPermissions(user.address, false)
+
+  const postBanned = await wng.banned(user.address)
+
+  expect(preBanned).to.eq(true, 'user should be banned before unbanning')
+  expect(postBanned).to.eq(false, 'user should NOT be banned after unbanning')
+}
+
+const testUpdateMinGiftAmount = async (context, wallet, minGiftAmount) => {
+  const { wng: unconnected } = context
+  const wng = unconnected.connect(wallet)
+
+  await wng.updateMinGiftAmount(minGiftAmount)
+
+  const postMinGiftAmount = await wng.minGiftAmount()
+
+  expect(postMinGiftAmount).to.eq(
+    minGiftAmount,
+    'minGiftAmount should match amount set'
+  )
+}
+
 module.exports = {
   testStartWedding,
   testUpdateVows,
@@ -373,5 +408,8 @@ module.exports = {
   testSendWeddingGift,
   testClaimWeddingGifts,
   testRejectProposal,
-  testDivorce
+  testDivorce,
+  testBanUser,
+  testUnBanUser,
+  testUpdateMinGiftAmount
 }

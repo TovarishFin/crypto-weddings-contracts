@@ -12,7 +12,10 @@ const {
   testSendWeddingGift,
   testClaimWeddingGifts,
   testRejectProposal,
-  testDivorce
+  testDivorce,
+  testBanUser,
+  testUnBanUser,
+  testUpdateMinGiftAmount
 } = require('../helpers/wng')
 const {
   utils: { parseEther }
@@ -29,7 +32,7 @@ describe('when creating a new wedding', () => {
   before('setup context', async () => {
     context = await setupContext()
     partner1 = context.partner1
-    partner2 = context.partner1
+    partner2 = context.partner2
   })
 
   it('should NOT startNewWedding with empty partner2', async () => {
@@ -236,5 +239,65 @@ describe('when using core Wedding functionality on an unhappy path', () => {
     await testDivorce(context, partner1)
     await assertRevert(testDivorce(context, other))
     await testDivorce(context, partner2)
+  })
+})
+
+describe('when making adjustments to a wedding', () => {
+  let context
+  let partner1
+  let partner2
+  let other
+  const name1 = 'bob'
+  const name2 = 'alice'
+
+  before('setup context', async () => {
+    context = await setupContext()
+    partner1 = context.partner1
+    partner2 = context.partner2
+    other = context.other
+
+    context = await testStartWedding(
+      context,
+      partner1,
+      partner2,
+      name1,
+      name2,
+      1
+    )
+  })
+
+  it('should NOT ban a user as NOT fiance', async () => {
+    await assertRevert(testBanUser(context, other, other))
+  })
+
+  it('should ban a user as fiance', async () => {
+    await testBanUser(context, partner1, other)
+  })
+
+  it('should NOT ban a user who has already been banned', async () => {
+    await assertRevert(testBanUser(context, partner1, other))
+  })
+
+  it('should NOT unban a user as NOT fiance', async () => {
+    await assertRevert(testUnBanUser(context, other, other))
+  })
+
+  it('should unban a user as fiance', async () => {
+    await testUnBanUser(context, partner2, other)
+  })
+
+  it('should NOT unban a user who has already been unbanned', async () => {
+    await assertRevert(testUnBanUser(context, partner2, other))
+  })
+
+  it('should updateMinGiftAmount as fiance', async () => {
+    await testUpdateMinGiftAmount(context, partner1, parseEther('0.15'))
+    await testUpdateMinGiftAmount(context, partner2, parseEther('0.25'))
+  })
+
+  it('should NOT updateMinGiftAmount as NOT fiance', async () => {
+    await assertRevert(
+      testUpdateMinGiftAmount(context, other, parseEther('0.15'))
+    )
   })
 })
