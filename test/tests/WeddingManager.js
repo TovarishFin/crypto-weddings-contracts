@@ -335,4 +335,41 @@ describe('when emitting events from a wedding', async () => {
     )
     await expect(tx).to.emit(wmr, 'GiftReceived')
   })
+
+  it('should NOT emitUserPermissionUpdated as NOT wedding', async () => {
+    wmr = wmr.connect(other)
+    await assertRevert(
+      wmr.emitUserPermissionUpdated(p1Address, true, { gasLimit })
+    )
+  })
+
+  it('should emitUserPermissionUpdated as wedding', async () => {
+    wmr = wmr.connect(weddingStub)
+    const tx = wmr.emitUserPermissionUpdated(p1Address, true, { gasLimit })
+    await expect(tx).to.emit(wmr, 'UserPermissionUpdated')
+  })
+
+  it('should NOT emitMinGiftAmountUpdated as NOT wedding', async () => {
+    wmr = wmr.connect(other)
+    await assertRevert(
+      wmr.emitMinGiftAmountUpdated(parseEther('0.777'), { gasLimit })
+    )
+  })
+
+  it('should emitMinGiftAmountUpdated as wedding', async () => {
+    wmr = wmr.connect(weddingStub)
+    const tx = wmr.emitMinGiftAmountUpdated(parseEther('0.777'), { gasLimit })
+    await expect(tx).to.emit(wmr, 'MinGiftAmountUpdated')
+  })
+
+  it('should NOT emitShouldHideGiftEventsUpdated as NOT wedding', async () => {
+    wmr = wmr.connect(other)
+    await assertRevert(wmr.emitShouldHideGiftEventsUpdated(true, { gasLimit }))
+  })
+
+  it('should emitShouldHideGiftEventsUpdated as wedding', async () => {
+    wmr = wmr.connect(weddingStub)
+    const tx = wmr.emitShouldHideGiftEventsUpdated(true, { gasLimit })
+    await expect(tx).to.emit(wmr, 'ShouldHideGiftEventsUpdated')
+  })
 })

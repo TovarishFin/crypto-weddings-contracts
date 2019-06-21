@@ -100,6 +100,11 @@ contract WeddingManager is Upgradeable {
     uint256 newGiftAmount
   );
 
+  event ShouldHideGiftEventsUpdated(
+    address indexed wedding,
+    bool shouldHideGiftEvents
+  );
+
   function addWedding(
     address _wedding,
     address _partner1,
@@ -381,6 +386,15 @@ contract WeddingManager is Upgradeable {
     onlyWedding
   {
     emit MinGiftAmountUpdated(msg.sender, _newGiftAmount);
+  }
+
+  function emitShouldHideGiftEventsUpdated(
+    bool _shouldHideGiftEvents
+  )
+    external
+    onlyWedding
+  {
+    emit ShouldHideGiftEventsUpdated(msg.sender, _shouldHideGiftEvents);
   }
 
   //

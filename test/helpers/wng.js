@@ -17,6 +17,7 @@ const testStartWedding = async (context, partner1, partner2, name1, name2) => {
     name1,
     name2
   )
+
   const wng = new Contract(weddingAddress, Wedding.abi, partner1)
 
   const postPartner1 = await wng.partner1()
@@ -364,7 +365,7 @@ const testBanUser = async (context, wallet, user) => {
   const wng = unconnected.connect(wallet)
   const preBanned = await wng.banned(user.address)
 
-  await wng.updateUserPermissions(user.address, true)
+  await wng.updateUserPermissions(user.address, true, { gasLimit })
 
   const postBanned = await wng.banned(user.address)
 
@@ -377,7 +378,7 @@ const testUnBanUser = async (context, wallet, user) => {
   const wng = unconnected.connect(wallet)
   const preBanned = await wng.banned(user.address)
 
-  await wng.updateUserPermissions(user.address, false)
+  await wng.updateUserPermissions(user.address, false, { gasLimit })
 
   const postBanned = await wng.banned(user.address)
 
@@ -389,13 +390,53 @@ const testUpdateMinGiftAmount = async (context, wallet, minGiftAmount) => {
   const { wng: unconnected } = context
   const wng = unconnected.connect(wallet)
 
-  await wng.updateMinGiftAmount(minGiftAmount)
+  await wng.updateMinGiftAmount(minGiftAmount, { gasLimit })
 
   const postMinGiftAmount = await wng.minGiftAmount()
 
   expect(postMinGiftAmount).to.eq(
     minGiftAmount,
     'minGiftAmount should match amount set'
+  )
+}
+
+const testHideGiftEvents = async (context, wallet) => {
+  const { wng: unconnected } = context
+  const wng = unconnected.connect(wallet)
+
+  const preShouldHide = await wng.shouldHideGiftEvents()
+
+  await wng.updateShouldHideGiftEvents(true, { gasLimit })
+
+  const postShouldHide = await wng.shouldHideGiftEvents()
+
+  expect(preShouldHide).to.eq(
+    false,
+    'shouldHideGiftEvents should be false before hiding'
+  )
+  expect(postShouldHide).to.eq(
+    true,
+    'shouldHideGiftEvents should be true after hiding'
+  )
+}
+
+const testShowGiftEvents = async (context, wallet) => {
+  const { wng: unconnected } = context
+  const wng = unconnected.connect(wallet)
+
+  const preShouldHide = await wng.shouldHideGiftEvents()
+
+  await wng.updateShouldHideGiftEvents(false, { gasLimit })
+
+  const postShouldHide = await wng.shouldHideGiftEvents()
+
+  expect(preShouldHide).to.eq(
+    true,
+    'shouldHideGiftEvents should be true before unhiding'
+  )
+  expect(postShouldHide).to.eq(
+    false,
+    'shouldHideGiftEvents should be false after unhiding'
   )
 }
 
@@ -411,5 +452,7 @@ module.exports = {
   testDivorce,
   testBanUser,
   testUnBanUser,
-  testUpdateMinGiftAmount
+  testUpdateMinGiftAmount,
+  testHideGiftEvents,
+  testShowGiftEvents
 }

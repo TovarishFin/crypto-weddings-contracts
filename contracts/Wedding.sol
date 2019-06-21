@@ -16,6 +16,7 @@ contract Wedding is IWedding {
   bool public p1Answer;
   bool public p2Answer;
   bool public married;
+  bool public shouldHideGiftEvents;
   uint256 public dateMarried;
   uint256 public minGiftAmount;
   mapping(address => bool) public banned;
@@ -200,6 +201,7 @@ contract Wedding is IWedding {
     public
     payable
   {
+    require(msg.value >= minGiftAmount);
     weddingManager.emitGiftReceived(msg.sender, msg.value, _message);
   }
 
@@ -233,6 +235,19 @@ contract Wedding is IWedding {
     minGiftAmount = _minGiftAmount;
 
     weddingManager.emitMinGiftAmountUpdated(_minGiftAmount);
+  }
+
+  function updateShouldHideGiftEvents(
+    bool _shouldHideGiftEvents
+  )
+    external
+    onlyFiance
+  {
+    require(_shouldHideGiftEvents != shouldHideGiftEvents);
+
+    shouldHideGiftEvents = _shouldHideGiftEvents;
+
+    weddingManager.emitShouldHideGiftEventsUpdated(_shouldHideGiftEvents);
   }
 
   function()

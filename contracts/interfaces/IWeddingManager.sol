@@ -78,4 +78,9 @@ interface IWeddingManager {
     uint256 _newGiftAmount
   )
     external;
+
+  function emitShouldHideGiftEventsUpdated(
+    bool _shouldHideGiftEvents
+  )
+    external;
 }

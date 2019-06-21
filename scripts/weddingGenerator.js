@@ -99,7 +99,7 @@ const sendWeddingGift = async (
 ) => {
   const wallet = getWallet(walletPath)
   const wng = getWedding(wallet, weddingAddress)
-  const value = ethers.utils.parseEther('.001')
+  const value = wng.minGiftAmount()
 
   console.log(chalk.yellow('sending wedding gift...'))
   const tx = await wng.sendWeddingGift(message, { value, gasLimit })
