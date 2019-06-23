@@ -6,9 +6,10 @@
         "weddingManager": "0x345cA3e014Aaf5dcA488057592ee47305D9B3e10"
     },
     "ropsten": {
-        "weddingMaster": "0x3F50B4669a2523426737eE67E45ed8DA965dA9F1",
-        "weddingManagerMaster": "0x9F1D3241071D45cEfd6b79cc7a6898Ffe5fca954",
-        "weddingManager": "0xa39b73520f68eE7A8212966215Bd0d35815ee82b"
+        "deploymentBlock": 5850092,
+        "weddingMaster": "0x175aC4eFFB99a14b3B57666137f7d24ba589024c",
+        "weddingManagerMaster": "0x502cb88C086788653EcDEFbBb3C1d819232b8945",
+        "weddingManager": "0x4655Ca6Ad4cA674b31B7f0b49b40E6ed9BD71F68"
     },
     "rinkeby": {
         "deploymentBlock": 4525827,
