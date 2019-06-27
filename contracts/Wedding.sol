@@ -3,8 +3,10 @@ pragma solidity ^0.5.7;
 import "./interfaces/IWeddingManager.sol";
 import "./interfaces/IWedding.sol";
 
+import "./WeddingEventEmitter.sol";
 
-contract Wedding is IWedding {
+
+contract Wedding is IWedding, WeddingEventEmitter {
   IWeddingManager public weddingManager;
   address public partner1;
   address public partner2;
@@ -111,7 +113,7 @@ contract Wedding is IWedding {
       ? p1Vows = _vows
       : p2Vows = _vows;
 
-    weddingManager.emitVowsUpdated(msg.sender, _vows);
+    emitVowsUpdated(address(weddingManager), msg.sender, _vows);
   }
 
   function acceptProposal()
@@ -128,14 +130,14 @@ contract Wedding is IWedding {
       dateMarried = block.timestamp;
       stage = Stage.Married;
 
-      weddingManager.emitMarried(partner1, partner2);
+      emitMarried(address(weddingManager), partner1, partner2);
 
       return;
     }
 
     stage = Stage.InProgress;
 
-    weddingManager.emitPartnerAccepts(msg.sender);
+    emitPartnerAccepts(address(weddingManager), msg.sender);
   }
 
   function rejectProposal()
@@ -143,7 +145,7 @@ contract Wedding is IWedding {
     onlyFiance
     atEitherStage(Stage.Initialized, Stage.InProgress)
   {
-    weddingManager.emitWeddingCancelled(msg.sender);
+    emitWeddingCancelled(address(weddingManager), msg.sender);
     weddingManager.removeCancelledWedding(partner1, partner2);
 
     selfdestruct(msg.sender);
@@ -162,7 +164,7 @@ contract Wedding is IWedding {
     );
     weddingPhoto = _uri;
 
-    weddingManager.emitWeddingPhotoUpdated(_uri);
+    emitWeddingPhotoUpdated(address(weddingManager), _uri);
   }
 
   function divorce()
@@ -174,7 +176,7 @@ contract Wedding is IWedding {
       ? p1Answer = false
       : p2Answer = false;
 
-    weddingManager.emitPartnerDivorces(msg.sender);
+    emitPartnerDivorces(address(weddingManager), msg.sender);
 
     if (!p1Answer && !p2Answer) {
       weddingManager.divorce(partner1, partner2);
@@ -192,7 +194,7 @@ contract Wedding is IWedding {
 
     msg.sender.transfer(_contractBalance);
 
-    weddingManager.emitGiftClaimed(msg.sender, _contractBalance);
+    emitGiftClaimed(address(weddingManager), msg.sender, _contractBalance);
   }
 
   function sendWeddingGift(
@@ -202,7 +204,13 @@ contract Wedding is IWedding {
     payable
   {
     require(msg.value >= minGiftAmount);
-    weddingManager.emitGiftReceived(msg.sender, msg.value, _message);
+
+    emitGiftReceived(
+      address(weddingManager),
+      msg.sender,
+      msg.value,
+      _message
+    );
   }
 
   function deRegisterWedding()
@@ -223,7 +231,7 @@ contract Wedding is IWedding {
 
     banned[_user] = _banned;
 
-    weddingManager.emitUserPermissionUpdated(_user, _banned);
+    emitUserPermissionUpdated(address(weddingManager), _user, _banned);
   }
 
   function updateMinGiftAmount(
@@ -234,7 +242,7 @@ contract Wedding is IWedding {
   {
     minGiftAmount = _minGiftAmount;
 
-    weddingManager.emitMinGiftAmountUpdated(_minGiftAmount);
+    emitMinGiftAmountUpdated(address(weddingManager), _minGiftAmount);
   }
 
   function updateShouldHideGiftEvents(
@@ -247,7 +255,7 @@ contract Wedding is IWedding {
 
     shouldHideGiftEvents = _shouldHideGiftEvents;
 
-    weddingManager.emitShouldHideGiftEventsUpdated(_shouldHideGiftEvents);
+    emitShouldHideGiftEventsUpdated(address(weddingManager), _shouldHideGiftEvents);
   }
 
   function()

@@ -1,6 +1,7 @@
 const WeddingManager = require('../../build/WeddingManager')
 const WeddingManagerStub = require('../../build/WeddingManagerStub')
 const Wedding = require('../../build/Wedding')
+const WeddingEventEmitterStub = require('../../build/WeddingEventEmitterStub')
 const UpgradeableProxy = require('../../build/UpgradeableProxy')
 const chalk = require('chalk')
 
@@ -74,6 +75,7 @@ const setupContext = async noInit => {
   const wngMaster = await deployContract(owner, Wedding)
   const wmrMaster = await deployContract(owner, WeddingManager)
   const wmrMasterStub = await deployContract(owner, WeddingManagerStub)
+  const wngEmitterStub = await deployContract(owner, WeddingEventEmitterStub)
 
   const wmrProxy = await deployContract(owner, UpgradeableProxy, [
     wmrMaster.address
@@ -92,6 +94,7 @@ const setupContext = async noInit => {
     partner2,
     other,
     weddingStub,
+    wngEmitterStub,
     wngMaster,
     wmrMaster,
     wmrMasterStub,

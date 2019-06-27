@@ -109,7 +109,7 @@ describe('when using weddingManager core functionality', async () => {
     context = await setupContext()
     owner = context.owner
     other = context.other
-    weddingStub = other
+    weddingStub = context.weddingStub
     partner1 = context.partner1
     partner2 = context.partner2
     const wallets = context.wallets
@@ -219,7 +219,7 @@ describe('when using weddingManager owner functionality', async () => {
   })
 })
 
-describe('when emitting events from a wedding', async () => {
+describe('when emitting events directly using wedding stub', async () => {
   let wmr
   let weddingStub
   let p1Address
@@ -230,7 +230,7 @@ describe('when emitting events from a wedding', async () => {
     wmr = context.wmr
     owner = context.owner
     other = context.other
-    weddingStub = context.wallets[9]
+    weddingStub = context.weddingStub
     p1Address = context.partner1.address
     p2Address = context.partner2.address
 
@@ -370,6 +370,136 @@ describe('when emitting events from a wedding', async () => {
   it('should emitShouldHideGiftEventsUpdated as wedding', async () => {
     wmr = wmr.connect(weddingStub)
     const tx = wmr.emitShouldHideGiftEventsUpdated(true, { gasLimit })
+    await expect(tx).to.emit(wmr, 'ShouldHideGiftEventsUpdated')
+  })
+})
+
+describe('when emitting events indirectly using wngEventEmitter', async () => {
+  let wmr
+  let wngEmitterStub
+  let p1Address
+  let p2Address
+
+  before('setup context', async () => {
+    context = await setupContext()
+    wmr = context.wmr
+    owner = context.owner
+    other = context.other
+    p1Address = context.partner1.address
+    p2Address = context.partner2.address
+    wngEmitterStub = context.wngEmitterStub
+
+    await testUpgradeMaster(context, owner, context.wmrMasterStub, true)
+    await testAddWeddingStub(
+      context,
+      wngEmitterStub,
+      context.partner1,
+      context.partner2
+    )
+  })
+
+  it('should emitPartnerAccepts as wedding wedding emitter', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitPartnerAcceptsExternal(
+      wmr.address,
+      p1Address,
+      { gasLimit }
+    )
+
+    await expect(tx).to.emit(wmr, 'PartnerAccepts')
+  })
+
+  it('should emitPartnerDivorces as wedding', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitPartnerDivorcesExternal(
+      wmr.address,
+      p1Address,
+      { gasLimit }
+    )
+    await expect(tx).to.emit(wmr, 'PartnerDivorces')
+  })
+
+  it('should emitWeddingPhotoUpdated as wedding', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitWeddingPhotoUpdatedExternal(
+      wmr.address,
+      'someuri',
+      {
+        gasLimit
+      }
+    )
+    await expect(tx).to.emit(wmr, 'WeddingPhotoUpdated')
+  })
+
+  it('should emitWeddingCancelled as wedding', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitWeddingCancelledExternal(
+      wmr.address,
+      p2Address,
+      {
+        gasLimit
+      }
+    )
+    await expect(tx).to.emit(wmr, 'WeddingCancelled')
+  })
+
+  it('should emitMarried as wedding', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitMarriedExternal(
+      wmr.address,
+      p1Address,
+      p2Address,
+      {
+        gasLimit
+      }
+    )
+    await expect(tx).to.emit(wmr, 'Married')
+  })
+
+  it('should emitGiftReceived as wedding', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitGiftReceivedExternal(
+      wmr.address,
+      other.address,
+      parseEther('1'),
+      'merry x-mas... wait what?',
+      {
+        gasLimit
+      }
+    )
+    await expect(tx).to.emit(wmr, 'GiftReceived')
+  })
+
+  it('should emitUserPermissionUpdated as wedding', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitUserPermissionUpdatedExternal(
+      wmr.address,
+      p1Address,
+      true,
+      { gasLimit }
+    )
+    await expect(tx).to.emit(wmr, 'UserPermissionUpdated')
+  })
+
+  it('should emitMinGiftAmountUpdated as wedding', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitMinGiftAmountUpdatedExternal(
+      wmr.address,
+      parseEther('0.777'),
+      { gasLimit }
+    )
+    await expect(tx).to.emit(wmr, 'MinGiftAmountUpdated')
+  })
+
+  it('should emitShouldHideGiftEventsUpdated as wedding', async () => {
+    wmr = wmr.connect(other)
+    const tx = wngEmitterStub.emitShouldHideGiftEventsUpdatedExternal(
+      wmr.address,
+      true,
+      {
+        gasLimit
+      }
+    )
     await expect(tx).to.emit(wmr, 'ShouldHideGiftEventsUpdated')
   })
 })
