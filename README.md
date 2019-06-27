@@ -166,3 +166,93 @@ for cost savings.
 * send wedding gifts
   * anyone can send ether to this contract
   * these wedding gifts can be claimed in full by either fiance
+
+### Development
+Install dependencies using yarn:
+```
+yarn
+```
+
+Run tests:
+```
+yarn test
+```
+
+To run locally with the DApp:
+```
+yarn link
+```
+
+You can then use the folowing command to use the contracts without having to reinstall:
+```
+yarn link crypto-weddings-contracts
+```
+
+To deploy onto local blockchain:
+start a blockchain:
+```
+yarn start:blockchain
+```
+deploy the contracts:
+```
+yarn deploy:private
+```
+seed with some data if you want:
+```
+yarn create:weddings:private
+```
+
+You can also use the crypto-weddings-repl to do a variety of tasks...
+```
+yarn repl:cryptoweddings
+```
+
+This will open node with ethers connected to the network and setup wallets using the mnemonic dictated in the `.env` file.
+From there you can easily interact with a wedding or the weddingManager contract. For more information on function arguments, see `weddingGenerator.js`
+
+The following functions/constants are available:
+* breakupAllWeddings,
+  * breaks up all weddings for first 13 paths of mnemonic
+* divorceRejectWedding,
+  * divorce or reject wedding (depending on the stage it is at)
+* createAllWeddings,
+  * create weddings in different states (for quick visual testing, demo purposes)
+* createMarriedWeddingWithClaimedGifts,
+  * self explanatory
+* createMarriedWeddingWithGifts,
+  * self explanatory
+* sendWeddingGift,
+  * self explanatory
+* createMarriedWeddingWithPhoto,
+  * self explanatory
+* createMarriedWedding,
+  * self explanatory
+* createInProgressWedding,
+  * self explanatory
+* createWedding,
+  * self explanatory
+* getRandomWomanName,
+  * self explanatory
+* getRandomManName,
+  * self explanatory
+* getTxWaitTime,
+  * self explanatory
+* getWedding,
+  * get an ethers wedding Contract at a specific address (connected to wallet and network)
+* getWeddingManager,
+  * get ethers weddingManager Contract at (connected to wallet and network)
+* getWallet,
+  * get wallet at specified path using mnemonic from `.env`
+* provider,
+  * get ethers provider connected to specified network in `.env`
+* womanNames,
+  * self explanatory
+* manNames,
+  * self explanatory
+* mnemonic,
+  * self explanatory
+* network,
+  * self explanatory
+* gasLimit,
+  * self explanatory
+* defaultPath
