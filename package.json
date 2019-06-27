@@ -2,7 +2,7 @@
   "name": "crypto-weddings-contracts",
   "author": "Cody Lamson",
   "license": "MIT",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "smart contracts for blockchain weddings",
   "repository": {
     "type": "git",
