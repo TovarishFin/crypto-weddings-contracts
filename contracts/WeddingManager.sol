@@ -266,7 +266,7 @@ contract WeddingManager is Upgradeable {
   }
 
   //
-  // start getters
+  // end getters
   //
 
   //
