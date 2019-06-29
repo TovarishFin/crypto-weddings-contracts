@@ -348,6 +348,99 @@ const breakupAllWeddings = async () => {
   }
 }
 
+const fundAccounts = async () => {
+  const funder = await getWallet(0)
+  const config = {
+    gasLimit,
+    gasPrice: 21000,
+    value: ethers.utils.parseEther('1.0')
+  }
+
+  console.log(
+    chalk.yellow('seding 1 ether from first account to next 9 accounts')
+  )
+
+  let tx
+
+  console.log(chalk.yellow('sending to account 1...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(1).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 1 successful'))
+
+  console.log(chalk.yellow('sending to account 2...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(2).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 2 successful'))
+
+  console.log(chalk.yellow('sending to account 3...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(3).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 3 successful'))
+
+  console.log(chalk.yellow('sending to account 4...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(4).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 4 successful'))
+
+  console.log(chalk.yellow('sending to account 5...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(5).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 5 successful'))
+
+  console.log(chalk.yellow('sending to account 6...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(6).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 6 successful'))
+
+  console.log(chalk.yellow('sending to account 7...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(7).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 7 successful'))
+
+  console.log(chalk.yellow('sending to account 8...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(8).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 8 successful'))
+
+  console.log(chalk.yellow('sending to account 9...'))
+  tx = await funder.sendTransaction({
+    ...config,
+    to: getWallet(9).address
+  })
+  await tx
+  console.log(chalk.cyan('sending to account 9 successful'))
+
+  console.log(chalk.cyan('funds successfully sent!'))
+}
+
+console.log(
+  chalk.bgGreen(`\n YOUR ARE ON THE ${network.toUpperCase()} NETWORK \n`)
+)
+
 module.exports = {
   breakupAllWeddings,
   divorceRejectWedding,
@@ -371,5 +464,6 @@ module.exports = {
   mnemonic,
   network,
   gasLimit,
-  defaultPath
+  defaultPath,
+  fundAccounts
 }

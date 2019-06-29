@@ -256,3 +256,5 @@ The following functions/constants are available:
 * gasLimit,
   * self explanatory
 * defaultPath
+* fundAccounts
+  * sends 1 ether from first account to next 9 accounts
