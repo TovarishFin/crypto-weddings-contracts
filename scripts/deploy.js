@@ -43,6 +43,10 @@ const deploy = async () => {
 
   const gasLimit = process.env.GAS_LIMIT || 5e6
   const network = process.env.NETWORK
+  const gasPrice =
+    ethers.utils.parseUnits(process.env.GAS_PRICE.toString(), 'gwei') ||
+    ethers.utils.parseUnits('5', 'gwei')
+
   if (!validNetworks.includes(network)) {
     console.log(chalk.red(`invalid network! network given is: ${network}`))
   }
@@ -71,7 +75,7 @@ const deploy = async () => {
     wngAbi,
     wngCode,
     wallet
-  ).deploy()
+  ).deploy({ gasPrice, gasLimit })
   await wngMaster.deployed()
 
   console.log(chalk.cyan('weddingMaster setup complete'))
@@ -81,7 +85,7 @@ const deploy = async () => {
     wmrAbi,
     wmrCode,
     wallet
-  ).deploy()
+  ).deploy({ gasPrice, gasLimit })
   await wmrMaster.deployed()
 
   console.log(chalk.cyan('weddingManager setup complete'))
@@ -91,7 +95,7 @@ const deploy = async () => {
     pxyAbi,
     pxyCode,
     wallet
-  ).deploy(wmrMaster.address)
+  ).deploy(wmrMaster.address, { gasPrice, gasLimit })
   await wmrProxy.deployed()
 
   console.log(chalk.cyan('weddingManager proxy setup complete'))
@@ -99,7 +103,7 @@ const deploy = async () => {
 
   const wmr = await new ethers.Contract(wmrProxy.address, wmrAbi, wallet)
 
-  await wmr.initialize(wngMaster.address, { gasLimit })
+  await wmr.initialize(wngMaster.address, { gasPrice, gasLimit })
 
   console.log(chalk.cyan('post deployment state setup complete'))
   console.log(

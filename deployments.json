@@ -6,15 +6,21 @@
         "weddingManager": "0x345cA3e014Aaf5dcA488057592ee47305D9B3e10"
     },
     "ropsten": {
-        "deploymentBlock": 5875868,
-        "weddingMaster": "0x7fcA465051c6fbcaFB6509B1D3Cb08883F58D499",
-        "weddingManagerMaster": "0x15ECAB1b0b58951E60a67772501E64b1C6782b24",
-        "weddingManager": "0x147D69068fddc16c9c7B29a3D8571C225881d2fC"
+        "deploymentBlock": 5888637,
+        "weddingMaster": "0x64A6eB85894A23950864C5F7B3f60dE1211939a0",
+        "weddingManagerMaster": "0xB1bA0ec1229E82a1bb2214Acc9bd2f9E431c0F67",
+        "weddingManager": "0x092773A2B8Bc6a1DA4151EE867b813EdE8b7c585"
     },
     "rinkeby": {
         "deploymentBlock": 4525827,
         "weddingMaster": "0xba379c912Ea5C6e153237a065139A95E70E07cC8",
         "weddingManagerMaster": "0x6e416A0469f56689424472308d418363385A7744",
         "weddingManager": "0xBe29919dc6E226E5240357E2BafBE74FF22F8A99"
+    },
+    "mainnet": {
+        "deploymentBlock": 8054796,
+        "weddingMaster": "0x1493E95D98DbB6ABa3Cb1e97CA33f4E5960Fb175",
+        "weddingManagerMaster": "0xC819d67D277E5259720d8BAbA9FcF72E5eE57a89",
+        "weddingManager": "0xAC3A18CE3cfD430b1636698448003f545760bA7f"
     }
 }

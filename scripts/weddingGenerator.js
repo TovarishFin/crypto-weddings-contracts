@@ -22,6 +22,10 @@ const network = process.env.NETWORK
 
 const mnemonic = process.env.MNEMONIC
 
+const gasPrice =
+  ethers.utils.parseUnits(process.env.GAS_PRICE.toString(), 'gwei') ||
+  ethers.utils.parseUnits('5', 'gwei')
+
 const manNames = [
   'bob',
   'jeff',
@@ -464,6 +468,7 @@ module.exports = {
   mnemonic,
   network,
   gasLimit,
+  gasPrice,
   defaultPath,
   fundAccounts
 }
