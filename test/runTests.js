@@ -27,5 +27,6 @@ fs.readdirSync(testDir)
 
 // Run the tests.
 mocha.run(function(failures) {
-  process.exitCode = failures ? 1 : 0 // exit with non-zero status if there were failures
+  // exit with non-zero status if there were failures
+  process.exit(failures ? 1 : 0)
 })

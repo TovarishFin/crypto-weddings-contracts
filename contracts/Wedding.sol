@@ -125,6 +125,8 @@ contract Wedding is IWedding, WeddingEventEmitter {
       ? p1Answer = true
       : p2Answer = true;
 
+    emitPartnerAccepts(address(weddingManager), msg.sender);
+
     if (p1Answer && p2Answer) {
       married = true;
       dateMarried = block.timestamp;
@@ -136,8 +138,6 @@ contract Wedding is IWedding, WeddingEventEmitter {
     }
 
     stage = Stage.InProgress;
-
-    emitPartnerAccepts(address(weddingManager), msg.sender);
   }
 
   function rejectProposal()
